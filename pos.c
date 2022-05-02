@@ -129,6 +129,8 @@ void teller_search_id(int id, const char * request); // Teller Search/Update/Del
 void teller_search_name(const char * teller_name, const char * request); // Teller Search/Update/Delete Request by Product Name
 void sale_new(void); // add new transaction
 void sale_display(void); // Display Transactions
+float compute_payable_amount(SaleTransaction * sale); // Compute Total Payable amount
+float compute_change(SaleTransaction * sale); // Compute Total Payable amount
 // other function prototypes
 int dscanc(int * d); // user single-input integer
 int cscanc(char * c); // user single-input char
@@ -283,7 +285,7 @@ void sales_menu(void) {
 int prod_add(void) {
     char save;
     Product product;
-    memset(&product, 0, sizeof(Product)); // set Product data to empty or 0
+    memset(&product, 0, sizeof(product)); // set Product data to empty or 0
     printf("---------- Add Product Details ----------\n\n");
     printf("Product ID : ");
     // scanf("%d", &product.id);
@@ -358,7 +360,7 @@ void prod_search_name(const char * prod_name, const char * request) {
 int teller_add(void) {
     char save;
     Teller teller;
-    memset(&teller, 0, sizeof(Teller)); // set Teller data to empty or 0
+    memset(&teller, 0, sizeof(teller)); // set Teller data to empty or 0
     printf("---------- Add Teller Details ----------\n\n");
     printf("Product ID : ");
     // scanf("%d", &teller.id);
@@ -424,15 +426,66 @@ void teller_search_name(const char * prod_name, const char * request) {
  * 
  */
 void sale_new(void) {
-    
+    printf("---------- Sale Transaction ----------\n\n");
+    printf("[1] New Transaction\n");
+    printf("[2] Display Transaction\n");
+    printf("\n--------------------------------------\n");
 }
 /**
  * @brief Display all Sale Transactions
  * 
  */
 void sale_display(void) {
-
+    SaleTransaction sale;
+    memset(&sale, 0, sizeof(sale));
+    char choice;
+    do {
+        printf("---------- New Transaction ----------\n\n");
+        printf("Sale ID : ");
+        // scanf("%d", &sale.id);
+        printf("Product Name : ");
+        scanf("%s", sale.items);
+        do {
+            printf("Do you want to add another item?\n");
+            printf("Type 'y' if yes, 'n' if no: ");
+            cscanc(&choice);
+            if (!(choice == 'n' || choice == 'N' || choice == 'y' || choice == 'Y'))
+                printf("Invalid Choice!\n");
+        } while (!(choice == 'n' || choice == 'N' || choice == 'y' || choice == 'Y'));
+    } while (!(choice == 'n' || choice == 'N'));
+    printf("_____________________________________\n");
+    printf("Total Payable Amount:\t%.2f", compute_payable_amount(&sale));
+    printf("Cash: %.2f");
+    scanf("%.2f", &sale.cash);
+    printf("\nChange: %.2f", compute_change(&sale));
+    getch();
 }
+/**
+ * @brief Compute payable amount of sales, record it to struct and return the amount
+ * 
+ * @param sale SaleTransaction structure data
+ * @return float Total Payable Amount
+ */
+float compute_payable_amount(SaleTransaction * sale) {
+    int i, total_items = 0;
+    float sum = 0;
+    total_items = sizeof(sale->items) / sizeof(sale->items[0]);
+    for (i = 0; i < total_items; i++) {
+        sum += sale->items[i].quantity * sale->items[i].product.unit_price;
+    }
+    sale->payable_amount = sum;
+    return sum;
+}
+/**
+ * @brief Compute the change of total payable amount and cash given, record it to struct and return the change amount
+ * 
+ * @param sale SaleTransaction structure data
+ * @return float Total Change Amount
+ */
+float compute_change(SaleTransaction * sale) {
+    return (float)(sale->payable_amount - sale->cash);
+}
+// other functions
 /**
  * @brief Custom Scanf for single character input for integer number
  * user single-input integer

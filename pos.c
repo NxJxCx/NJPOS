@@ -77,6 +77,10 @@ char getche(void)
 // Define constants
 #define MAX_NAME 250
 #define MAX_ITEMS 2000
+#define PRODUCTRECORDS "product_records.bin"
+#define TELLERRECORDS "teller_records.bin"
+#define SALERECORDS "sale_records.bin"
+#define SALETRANSACTIONS "%s_sale_transaction.txt"
 
 // Define Structures
 typedef struct {
@@ -135,6 +139,16 @@ int cscanc(char * c); // user single-input char
 char * capitalize(const char * word); // Capitalize first letter of the word/string
 
 int main(int argc, char * argv[]) {
+    FILE * fp; // create binary files if not exists
+    if ((fp = fopen(PRODUCTRECORDS, "ab")) == NULL)
+        exit(1);
+    fclose(fp);
+    if ((fp = fopen(TELLERRECORDS, "ab")) == NULL)
+        exit(1);
+    fclose(fp);
+    if ((fp = fopen(SALERECORDS, "ab")) == NULL)
+        exit(1);
+    fclose(fp);
     while (1) {
         if (CLI() == 4) // 4 = exit
             break;
@@ -153,13 +167,13 @@ int main(int argc, char * argv[]) {
 int CLI(void) {
     clrscr();
     int choice = 0;
-    printf("---------- Welcome To NJ Enterprise ----------\n");
-    printf("Please select:\n\n");
-    printf("[1] Product Details\n");
-    printf("[2] Teller Details\n");
-    printf("[3] Sale Transaction\n");
-    printf("[4] Exit Program\n");
-    printf("----------------------------------------------\n\n");
+    printf(" ---------- Welcome To NJ Enterprise ----------\n");
+    printf(" Please select:\n\n");
+    printf(" [1] Product Details\n");
+    printf(" [2] Teller Details\n");
+    printf(" [3] Sale Transaction\n");
+    printf(" [4] Exit Program\n");
+    printf(" ----------------------------------------------\n\n");
     do {
         printf("Enter Choice: ");
         dscanc(&choice);
@@ -186,19 +200,19 @@ int CLI(void) {
 void prod_menu(void) {
     clrscr();
     int choice;
-    printf("---------- Product Details ----------\n\n");
-    printf("[1] Add\n");
-    printf("[2] Display\n");
-    printf("[3] Search\n");
-    printf("[4] Update\n");
-    printf("[5] Delete\n");
-    printf("[6] Go Back\n");
-    printf("-------------------------------------\n\n");
+    printf(" ---------- Product Details ----------\n\n");
+    printf(" [1] Add\n");
+    printf(" [2] Display\n");
+    printf(" [3] Search\n");
+    printf(" [4] Update\n");
+    printf(" [5] Delete\n");
+    printf(" [6] Go Back\n");
+    printf(" -------------------------------------\n\n");
     do {
-        printf("Choice: ");
+        printf(" Choice: ");
         dscanc(&choice);
         if (!(choice > 0 && choice < 7))
-            printf("Invalid Choice!\n");
+            printf(" Invalid Choice!\n");
     } while (!(choice > 0 && choice < 7));
     switch (choice) {
         case 1:
@@ -225,30 +239,35 @@ void prod_menu(void) {
 void teller_menu(void) {
     clrscr();
     int choice;
-    printf("---------- Teller Details ----------\n\n");
-    printf("[1] Add\n");
-    printf("[2] Display\n");
-    printf("[3] Search\n");
-    printf("[4] Update\n");
-    printf("[5] Delete\n");
-    printf("[6] Go Back\n");
-    printf("-------------------------------------\n\n");
+    printf(" ---------- Teller Details ----------\n\n");
+    printf(" [1] Add\n");
+    printf(" [2] Display\n");
+    printf(" [3] Search\n");
+    printf(" [4] Update\n");
+    printf(" [5] Delete\n");
+    printf(" [6] Go Back\n");
+    printf(" -------------------------------------\n\n");
     do {
-        printf("Choice: ");
+        printf(" Choice: ");
         dscanc(&choice);
         if (!(choice > 0 && choice < 7))
-            printf("Invalid Choice!\n");
+            printf(" Invalid Choice!\n");
     } while (!(choice > 0 && choice < 7));
     switch (choice) {
         case 1:
+            teller_add();
             break;
         case 2:
+            teller_display();
             break;
         case 3:
+            teller_sud_menu("search");
             break;
         case 4:
+            teller_sud_menu("update");
             break;
         case 5:
+            teller_sud_menu("delete");
             break;
         default:
     }
@@ -260,16 +279,16 @@ void teller_menu(void) {
 void sales_menu(void) {
     clrscr();
     int choice;
-    printf("---------- Sale Transaction ----------\n\n");
-    printf("[1] New Transaction\n");
-    printf("[2] Display Transaction\n");
-    printf("[3] Go Back\n");
-    printf("--------------------------------------\n\n");
+    printf(" ---------- Sale Transaction ----------\n\n");
+    printf(" [1] New Transaction\n");
+    printf(" [2] Display Transaction\n");
+    printf(" [3] Go Back\n");
+    printf(" --------------------------------------\n\n");
     do {
-        printf("Choice: ");
+        printf(" Choice: ");
         dscanc(&choice);
         if (!(choice > 0 && choice < 4))
-            printf("Invalid Choice!\n");
+            printf(" Invalid Choice!\n");
     } while (!(choice > 0 && choice < 4));
     switch (choice) {
         case 1:
@@ -289,20 +308,20 @@ int prod_add(void) {
     char save;
     Product product;
     memset(&product, 0, sizeof(product)); // set Product data to empty or 0
-    printf("---------- Add Product Details ----------\n\n");
-    printf("Product ID : ");
+    printf(" ---------- Add Product Details ----------\n\n");
+    printf(" Product ID : ");
     // scanf("%d", &product.id);
-    printf("Product Name : ");
+    printf(" Product Name : ");
     scanf("%[^\n]s", product.name); // %[^\n]s reads inputted text after newline or [Enter] character '\n'
-    printf("Product Description : ");
+    printf(" Product Description : ");
     scanf("%[^\n]s", product.description);
-    printf("Product Category : ");
+    printf(" Product Category : ");
     scanf("%[^\n]s", product.category);
-    printf("Product Unit : ");
+    printf(" Product Unit : ");
     scanf("%[^\n]s", product.unit);
-    printf("Product Unit Price : ");
+    printf(" Product Unit Price : ");
     scanf("%.2f", &product.unit); // %.2f reads inpputed floating number with 2 decimal places
-    printf("\nSave these data?\nType 'y' if yes, 'n' if no:");
+    printf("\n Save these data?\nType 'y' if yes, 'n' if no:");
     do {
         if (save == 'N' || save == 'n')
             return -1; // cancelled / not saved
@@ -314,7 +333,27 @@ int prod_add(void) {
  * 
  */
 void prod_display(void) {
-
+    int i, count = 0, size;
+    FILE * fp;
+    Product * products;
+    if ((fp = fopen(PRODUCTRECORDS, "rb")) == NULL)
+        goto displayResults; // if file error, goto displayResults label
+    fseek(fp, 0, SEEK_END); // set cursor at the end
+    size = ftell(fp); // get the file size from the end cursor
+    fseek(fp, 0, SEEK_SET); // set cursor at the start
+    count = size / sizeof(Product); // get the records count by dividing the file size and the size of Product struct
+    products = calloc(count, sizeof(Product)); // set the memory allocation of products with the size of Product struct times the record count
+    displayResults: // label for displaying product details
+        printf(" ---------- Display Product Details ----------\n");
+        printf(" %s\t%s\t%s\t%s\t%s\t%s\t\n", "Product ID", "Product Name", "Product Description", "Product Category", "Product Unit", "Product Unit Price");
+        // get the records
+        fread(products, sizeof(Product), count, fp);
+        for (i = 0; i < count; i++) {
+            // display data
+            printf(" %s\t%s\t%s\t%s\t%s\t%s\t\n", products[i].id, products[i].name, products[i].description, products[i].category, products[i].unit, products[i].unit_price);
+        }
+        printf(" \n---------------------------------------------\n");
+    free(products); // we make sure to free the allocated memory
 }
 /**
  * @brief Product Search/Update/Delete Menu
@@ -332,8 +371,17 @@ void prod_sud_menu(const char * request) {
     scanf("%d", &choice);
     switch (choice) {
         case 1:
+            int id;
+            printf("\nEnter ID: ");
+            scanf("%d", &id);
+            prod_search_id(id, request);
             break;
         case 2:
+            char name[MAX_NAME];
+            memset(name, 0, sizeof(name));
+            printf("\nEnter Product Name: ");
+            scanf("%s", &name);
+            prod_search_name(name, request);
             break;
         default:
             prod_menu();
@@ -386,14 +434,60 @@ int teller_add(void) {
  * 
  */
 void teller_display(void) {
-
+    int i, count = 0, size;
+    FILE * fp;
+    Teller * tellers;
+    if ((fp = fopen(TELLERRECORDS, "rb")) == NULL)
+        goto displayResults; // if file error, goto displayResults label
+    fseek(fp, 0, SEEK_END); // set cursor at the end
+    size = ftell(fp); // get the file size from the end cursor
+    fseek(fp, 0, SEEK_SET); // set cursor at the start
+    count = size / sizeof(Teller); // get the records count by dividing the file size and the size of Teller struct
+    tellers = calloc(count, sizeof(Teller)); // set the memory allocation of tellers with the size of Teller struct times the record count
+    displayResults: // label for displaying product details
+        printf(" ---------- Display Teller Details ----------\n");
+        printf(" %s\t%s\t%s\t%s\t\n", "Teller ID", "Teller First Name", "Teller Middle Name", "Teller Last Name");
+        // get the records
+        fread(tellers, sizeof(Teller), count, fp);
+        for (i = 0; i < count; i++) {
+            // display data
+            printf(" %s\t%s\t%s\t%s\t\n", tellers[i].id, tellers[i].first_name, tellers[i].middle_name, tellers[i].last_name);
+        }
+        printf(" \n---------------------------------------------\n");
+    free(tellers); // we make sure to free the allocated memory
 }
 /**
  * @brief Teller Search/Update/Delete Menu
  * 
  */
 void teller_sud_menu(const char * request) {
-
+    clrscr();
+    int choice;
+    printf("---------- %s Teller Details ----------\n\n", capitalize(request));
+    printf("[1] By Teller ID\n");
+    printf("[2] By Teller Name\n");
+    printf("[3] Go Back\n");
+    printf("--------------------------------------------\n");
+    printf("Choice: ");
+    scanf("%d", &choice);
+    switch (choice) {
+        case 1:
+            int id;
+            printf("\nEnter ID: ");
+            scanf("%d", &id);
+            teller_search_id(id, request);
+            break;
+        case 2:
+            char name[MAX_NAME];
+            memset(name, 0, sizeof(name));
+            printf("\nEnter Teller Name: ");
+            scanf("%s", &name);
+            teller_search_name(name, request);
+            break;
+        default:
+            teller_menu();
+    }
+    getch();
 }
 /**
  * @brief Teller Search/Update/Delete Request by ID

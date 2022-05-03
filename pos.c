@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #ifdef _WIN32 // for Windows OS only
 #include <conio.h>
 void clrscr(void) {
@@ -115,25 +116,23 @@ void teller_menu(void); // Teller Details Menu
 void sales_menu(void); // Sale Transaction Menu
 int prod_add(void); // Add new Product Details
 void prod_display(void); // Display all Product Details
-void prod_search_menu(void); // Product Search Menu
-void prod_update_menu(void); // Product Update Menu
-void prod_delete_menu(void); // Product Delete Menu
+void prod_sud_menu(const char * request); // Product Search/Update/Delete Menu
 void prod_search_id(int id, const char * request); // Product Search/Update/Delete Request by ID
 void prod_search_name(const char * prod_name, const char * request); // Product Search/Update/Delete Request by Product Name
 int teller_add(void); // Add new Teller Details
 void teller_display(void); // Display all Teller Details
-void teller_search_menu(void); // Teller Search Menu
-void teller_update_menu(void); // Teller Update Menu
-void teller_delete_menu(void); // Teller Delete Menu
+void teller_sud_menu(const char * request); // Teller Search/Update/Delete Menu
 void teller_search_id(int id, const char * request); // Teller Search/Update/Delete Request by ID
 void teller_search_name(const char * teller_name, const char * request); // Teller Search/Update/Delete Request by Product Name
 void sale_new(void); // add new transaction
 void sale_display(void); // Display Transactions
 float compute_payable_amount(SaleTransaction * sale); // Compute Total Payable amount
 float compute_change(SaleTransaction * sale); // Compute Total Payable amount
+int getProductByID(Product * productBuffer, int id); // Get Product data to buffer by ID
 // other function prototypes
 int dscanc(int * d); // user single-input integer
 int cscanc(char * c); // user single-input char
+char * capitalize(const char * word); // Capitalize first letter of the word/string
 
 int main(int argc, char * argv[]) {
     while (1) {
@@ -141,6 +140,7 @@ int main(int argc, char * argv[]) {
             break;
     }
     printf("Thank you for using this Point of Sales System (POS). Goodbye!");
+    getch(); // pause before exit
     return 0;
 }
 
@@ -151,6 +151,7 @@ int main(int argc, char * argv[]) {
  * @return int 4 - EXIT APPLICATION; else Loop back to Main menu
  */
 int CLI(void) {
+    clrscr();
     int choice = 0;
     printf("---------- Welcome To NJ Enterprise ----------\n");
     printf("Please select:\n\n");
@@ -163,7 +164,7 @@ int CLI(void) {
         printf("Enter Choice: ");
         dscanc(&choice);
         if (!(choice > 0 && choice < 5))
-            printf("Invalid Choice! Choose from 1-4 only");
+            printf("Invalid Choice!\n");
     } while (!(choice > 0 && choice < 5));
     switch (choice) {
         case 1:
@@ -183,6 +184,7 @@ int CLI(void) {
  * 
  */
 void prod_menu(void) {
+    clrscr();
     int choice;
     printf("---------- Product Details ----------\n\n");
     printf("[1] Add\n");
@@ -196,33 +198,32 @@ void prod_menu(void) {
         printf("Choice: ");
         dscanc(&choice);
         if (!(choice > 0 && choice < 7))
-            printf("Invalid Choice! Choose from 1-6 only");
+            printf("Invalid Choice!\n");
     } while (!(choice > 0 && choice < 7));
     switch (choice) {
         case 1:
-            printf("1");
+            prod_add();
             break;
         case 2:
-            printf("2");
+            prod_display();
             break;
         case 3:
-            printf("3");
+            prod_sud_menu("search");
             break;
         case 4:
-            printf("4");
+            prod_sud_menu("update");
             break;
         case 5:
-            printf("5");
+            prod_sud_menu("delete");
             break;
-        default:
     }
-    getch();
 }
 /**
  * @brief Teller Details Menu
  * 
  */
 void teller_menu(void) {
+    clrscr();
     int choice;
     printf("---------- Teller Details ----------\n\n");
     printf("[1] Add\n");
@@ -236,7 +237,7 @@ void teller_menu(void) {
         printf("Choice: ");
         dscanc(&choice);
         if (!(choice > 0 && choice < 7))
-            printf("Invalid Choice! Choose from 1-6 only");
+            printf("Invalid Choice!\n");
     } while (!(choice > 0 && choice < 7));
     switch (choice) {
         case 1:
@@ -257,6 +258,7 @@ void teller_menu(void) {
  * 
  */
 void sales_menu(void) {
+    clrscr();
     int choice;
     printf("---------- Sale Transaction ----------\n\n");
     printf("[1] New Transaction\n");
@@ -267,7 +269,7 @@ void sales_menu(void) {
         printf("Choice: ");
         dscanc(&choice);
         if (!(choice > 0 && choice < 4))
-            printf("Invalid Choice! Choose from 1-3 only");
+            printf("Invalid Choice!\n");
     } while (!(choice > 0 && choice < 4));
     switch (choice) {
         case 1:
@@ -283,6 +285,7 @@ void sales_menu(void) {
  * @return int [0] if saved; else canceled / not saved;
  */
 int prod_add(void) {
+    clrscr();
     char save;
     Product product;
     memset(&product, 0, sizeof(product)); // set Product data to empty or 0
@@ -314,25 +317,28 @@ void prod_display(void) {
 
 }
 /**
- * @brief Product Search Menu
+ * @brief Product Search/Update/Delete Menu
  * 
  */
-void prod_search_menu(void) {
-
-}
-/**
- * @brief Product Update Menu
- * 
- */
-void prod_update_menu(void) {
-
-}
-/**
- * @brief Product Delete Menu
- * 
- */
-void prod_delete_menu(void) {
-
+void prod_sud_menu(const char * request) {
+    clrscr();
+    int choice;
+    printf("---------- %s Product Details ----------\n\n", capitalize(request));
+    printf("[1] By Product ID\n");
+    printf("[2] By Product Name\n");
+    printf("[3] Go Back\n");
+    printf("--------------------------------------------\n");
+    printf("Choice: ");
+    scanf("%d", &choice);
+    switch (choice) {
+        case 1:
+            break;
+        case 2:
+            break;
+        default:
+            prod_menu();
+    }
+    getch();
 }
 /**
  * @brief Product Search/Update/Delete Request by ID
@@ -383,24 +389,10 @@ void teller_display(void) {
 
 }
 /**
- * @brief Teller Search Menu
+ * @brief Teller Search/Update/Delete Menu
  * 
  */
-void teller_search_menu(void) {
-
-}
-/**
- * @brief Teller Update Menu
- * 
- */
-void teller_update_menu(void) {
-
-}
-/**
- * @brief Teller Delete Menu
- * 
- */
-void teller_delete_menu(void) {
+void teller_sud_menu(const char * request) {
 
 }
 /**
@@ -421,8 +413,10 @@ void teller_search_id(int id, const char * request) {
 void teller_search_name(const char * prod_name, const char * request) {
 
 }
-/**
- * @brief Add new Sale Transaction
+/**/**
+ * @brief 
+ * 
+ */
  * 
  */
 void sale_new(void) {
@@ -437,14 +431,37 @@ void sale_new(void) {
  */
 void sale_display(void) {
     SaleTransaction sale;
-    memset(&sale, 0, sizeof(sale));
-    char choice;
+    memset(&sale, 0, sizeof(sale)); // set SaleTransaction data to empty or 0
+    memset(sale.items, 0, MAX_ITEMS*sizeof(sale.items[0])); // set ProductItem data to empty or 0
+    char choice, i, count = 0, appendDisplay[5000];
+    int searchID;
+    memset(appendDisplay, 0, 5000*sizeof(appendDisplay[0])); // set appendDisplay to empty string
+    printf("---------- New Transaction ----------\n");
+    sprintf(appendDisplay, "---------- New Transaction ----------\n");
     do {
-        printf("---------- New Transaction ----------\n\n");
-        printf("Sale ID : ");
+        memset(&sale.items[count].product, 0, sizeof(sale.items[count].product)); // set the Product data empty or 0
+        printf("\nSale ID : ");
         // scanf("%d", &sale.id);
-        printf("Product Name : ");
-        scanf("%s", sale.items);
+        sprintf(appendDisplay, "\nSale ID : %d\n");
+        printf("Product ID : "); // We will use product ID...
+        scanf("%d", &searchID); // ...rather than Product name for input to search the specific existing product
+        // searching for product details by ID and put it in the SaleTransaction data
+        while (getProductByID(&sale.items[count].product) != 0) { // loop while product id does not exists in records
+            printf("Product not found!\n");
+            getch();
+            clrscr(); // clear the command line screen
+            printf("%s", appendDisplay); // then display the previous successful add item and the current sale transaction ID
+            printf("Product ID : ");
+            scanf("%d", &searchID); // input product ID again
+        }
+        // append display to appendDisplay variable string of the selected product details     
+        sprintf(appendDisplay, "Product Name : %s\n", sale.items[count].product.name);
+        sprintf(appendDisplay, "Product Unit : %s\n", sale.items[count].product.unit);
+        sprintf(appendDisplay, "Product Price : %.2f\n", sale.items[count].product.unit_price);
+        sprintf(appendDisplay, "Quantity : %d\n", &sale.items[count].quantity);
+        clrscr(); // clear the command line screen
+        printf("%s", appendDisplay); // display previous and current product details of selected products
+        count++; // increment the count of recorded sale transaction
         do {
             printf("Do you want to add another item?\n");
             printf("Type 'y' if yes, 'n' if no: ");
@@ -452,12 +469,19 @@ void sale_display(void) {
             if (!(choice == 'n' || choice == 'N' || choice == 'y' || choice == 'Y'))
                 printf("Invalid Choice!\n");
         } while (!(choice == 'n' || choice == 'N' || choice == 'y' || choice == 'Y'));
+        // repeat if yes
     } while (!(choice == 'n' || choice == 'N'));
-    printf("_____________________________________\n");
-    printf("Total Payable Amount:\t%.2f", compute_payable_amount(&sale));
-    printf("Cash: %.2f");
+    clrscr(); // clear the command line screen
+    // display total
+    sprintf(appendDisplay, "_____________________________________\n");
+    sprintf(appendDisplay, "Total Payable Amount:\t%.2f", compute_payable_amount(&sale));
+    sprintf(appendDisplay, "Cash: ");
+    printf("%s", appendDisplay);
     scanf("%.2f", &sale.cash);
-    printf("\nChange: %.2f", compute_change(&sale));
+    sprintf(appendDisplay, "%.2f\n", sale.cash);
+    sprintf(appendDisplay, "\nChange: %.2f", compute_change(&sale));
+    printf("\nChange: %.2f\n", sale.change);
+    // TODO: write to txt file
     getch();
 }
 /**
@@ -476,6 +500,18 @@ float compute_payable_amount(SaleTransaction * sale) {
     sale->payable_amount = sum;
     return sum;
 }
+/**
+ * @brief Get the Product data to buffer By ID
+ * 
+ * @param productbuffer 
+ * @param id 
+ * @return int 0 - successfully retrieved data; else - failed to retrieve data
+ */
+int getProductByID(Product * productbuffer, int id) {
+
+    return 0;
+}
+
 /**
  * @brief Compute the change of total payable amount and cash given, record it to struct and return the change amount
  * 
@@ -511,4 +547,26 @@ int cscanc(char * c) {
     *c = getch();
     printf("%c\n", *c);
     return *c;
+}
+/**
+ * @brief Capitalize the first letter of the word/string
+ * 
+ * @param word 
+ * @return char* 
+ */
+char * capitalize(const char * word) {
+    int upper = 0;
+    char buf[250], *ret;
+    memset(buf, 0, 250*sizeof(buf[0]));
+    strcpy(buf, word);
+    char * temp = (char *)buf;
+    for (; *temp; ++temp) {
+        if (upper == 0) {
+            *temp = toupper((unsigned char)*temp); // Capitalize first letter
+            upper++;
+        } else
+            *temp = tolower((unsigned char)*temp); // lowercase other letters
+    }
+    ret = (char *)buf;
+    return ret;
 }

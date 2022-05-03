@@ -1417,7 +1417,7 @@ void sale_display(void) {
     count = getRecordCount(SALERECORDS, sizeof(SaleTransaction));
     SaleTransaction sales[count];
     if (count < 1)
-        goto displayEmptyResults;
+        goto displayEmptyResults; // redirect empty records
     getSaleData(sales);
     printf("\n ---------- Display Transaction ----------\n\n");
     printf(" %s%s%s%s%s\n\n", "  Sale ID ", "    Product Name    ", "    Product Unit    ", " Product Unit Price ", " Quantity ");

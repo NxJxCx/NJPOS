@@ -414,7 +414,7 @@ void teller_search_name(const char * prod_name, const char * request) {
 
 }
 /**
- * @brief 
+ * @brief Add new Sale Transaction
  * 
  */
 void sale_new(void) {

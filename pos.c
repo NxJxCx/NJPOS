@@ -274,7 +274,16 @@ void teller_menu(void) {
     } while (!(choice > 0 && choice < 7));
     switch (choice) {
         case 1:
-            teller_add();
+            char cnew;
+            while (teller_add() == 0) {
+                printf(" Add new teller?\n");
+                do {
+                    printf(" Type 'y' if yes, 'n' if no: ");
+                    cscanc(&cnew);
+                } while (!(cnew == 'y' || cnew == 'Y' || cnew == 'n' || cnew == 'N'));
+                if (cnew == 'n' || cnew == 'N')
+                    break;
+            }
             break;
         case 2:
             teller_display();
@@ -1283,7 +1292,6 @@ int teller_search_name(const char * teller_name, const char * request) {
  */
 void sale_new(void) {
     clrscr();
-    FILE * fp;
     fflush(stdin);
     char choice, i, appendDisplay[5000], buffile[MAX_NAME], datenow[TIME_SIZE], timenow[TIME_SIZE], tempbuf[MAX_NAME];
     int searchID, latestID, count = 0, index = 0, tempQuantity = -1;
@@ -1300,16 +1308,18 @@ void sale_new(void) {
     sprintf(buffile, SALETRANSACTIONS, datenow); // we will use date for the filename
     index = getRecordCount(SALERECORDS, sizeof(SaleTransaction));
     count = index;
-    latestID = getLatestID(SALERECORDS, sizeof(SaleTransaction)) + 1;
+    latestID = getLatestID(SALERECORDS, sizeof(SaleTransaction)); // set latest id of SaleTransaction data
     SaleTransaction sale[MAX_ITEMS];
     memset(sale, 0, sizeof(sale));
-    getSaleData(sale);
+    if (count > 0)
+        getSaleData(sale);
     strcat(appendDisplay, "\n ---------- New Transaction ----------\n");
     do {
-        memset(&sale[index], 0, sizeof(sale[index])); // set SaleTransaction data to empty or 0
-        memset(&sale[index].product, 0, sizeof(sale[index].product)); // set the Product data empty or 0
-        sprintf(tempbuf, "\n Sale ID : %d\n%c", latestID++, 0);
-        strcat(appendDisplay, tempbuf); // increment the latestID of recorded sale transaction
+        memset(&sale[count], 0, sizeof(sale[count])); // set SaleTransaction data to empty or 0
+        memset(&sale[count].product, 0, sizeof(sale[count].product)); // set the Product data empty or 0
+        sprintf(tempbuf, "\n Sale ID : %d\n%c", ++latestID, 0); // increment the latestID of recorded sale transaction
+        sale[count].id = latestID; // put the latest ID to the SaleTransaction struct data
+        strcat(appendDisplay, tempbuf);
         do {
             clrscr();
             printf("%s", appendDisplay);
@@ -1350,7 +1360,7 @@ void sale_new(void) {
         // repeat if yes
     } while (!(choice == 'n' || choice == 'N'));
     clrscr(); // clear the command line screen
-    payable_amount = compute_payable_amount(sale + index, count-index);
+    payable_amount = compute_payable_amount(sale, count-index);
     // record payable amount
     strcat(appendDisplay, " _____________________________________\n");
     sprintf(tempbuf, " Total Payable Amount:\t%.2f\n%c", payable_amount, 0);
@@ -1377,9 +1387,9 @@ void sale_new(void) {
     time(&t); // set time
     tmp = localtime(&t); // set localtime
     strftime(timenow, sizeof(timenow), "%H:%M:%S", tmp); // format will be 24:59:59 for the time of transaction
-    sprintf(tempbuf, "\n Date: %s\n%c", datenow, 0);
+    sprintf(tempbuf, "\n\n Date: %s\n%c", datenow, 0);
     strcat(appendDisplay, tempbuf);
-    sprintf(tempbuf, "\n Time: %s\n%c", timenow, 0);
+    sprintf(tempbuf, " Time: %s\n%c", timenow, 0);
     strcat(appendDisplay, tempbuf);
     // write to bin file
     if (0 != saveSaleTransactionToFile(sale, count)) {
@@ -1387,6 +1397,7 @@ void sale_new(void) {
         return;
     }
     // write to txt file
+    FILE * fp;
     if ((fp = fopen(buffile, "a")) == NULL) {
         fprintf(stderr, "Failed to write transaction file. Sale Transaction saved but did not write to display transaction text file.");
         return;
@@ -1413,17 +1424,18 @@ void sale_display(void) {
     for (i = 0; i < count; i++) {
         strcpy(name, centerTheString(sales[i].product.name, sizeof(name)));
         strcpy(p_unit, centerTheString(sales[i].product.unit, sizeof(p_unit)));
-        strcpy(p_price, rightAlignFloat(sales[i].product.unit_price, sizeof(p_price)));
         // display data
-        printf(" %08d %s%s%s   %d\n", sales[i].id, name, p_unit, p_price, sales[i].quantity);
+        printf("  %08d %s%s", sales[i].id, name, p_unit);
+        strcpy(p_price, rightAlignFloat(sales[i].product.unit_price, sizeof(p_price)));
+        printf("%s  \t   %d\n", p_price, sales[i].quantity);
     }
-    printf("\n ---------------------------------------------\n");
+    printf("\n -----------------------------------------\n");
     getch();
     return;
     displayEmptyResults:
         printf("\n ---------- Display Transaction ----------\n\n");
         printf(" %s%s%s%s%s\n\n", "  Sale ID ", "    Product Name    ", "    Product Unit    ", " Product Unit Price ", " Quantity ");
-        printf("\n ---------------------------------------------\n");
+        printf("\n -----------------------------------------\n");
         getch();
 }
 /**
@@ -1433,13 +1445,11 @@ void sale_display(void) {
  * @return float Total Payable Amount
  */
 float compute_payable_amount(SaleTransaction * sale, int count) {
-    int i;
+    int i, starti;
     float sum;
-    for (i = 0; i < count; i++) {
-        sum = (*sale).quantity * (*sale).product.unit_price;
-        sale++;
-    }
-    //sum = sale[i].quantity * sale[i].product.unit_price;
+    starti = getRecordCount(SALERECORDS, sizeof(SaleTransaction));
+    for (i = starti; i < count+starti; i++)
+        sum += sale[i].product.unit_price * sale[i].quantity;
     return sum;
 }
 /**
@@ -1482,22 +1492,32 @@ int getRecordCount(const char * filename, int recordsize) {
  * @return int latest maximum ID; 0 if file error
  */
 int getLatestID(const char * filename, int recordsize) {
-    FILE * fp;
-    int i, count;
+    int i, count, maxid;
     count = getRecordCount(filename, recordsize);
-    SaleTransaction sales[count];
     if (count < 1)
         return 0; // return 0 if no records
-    if ((fp = fopen(filename, "rb")) == NULL) {
-        fprintf(stderr, "Failed to open %s Records.", filename);
-        return 0;
-    }
-    int ids[count], maxid;
-    for (i = 0; i < count; i++)
-        fread(&sales[i], sizeof(Product), 1, fp);
-    fclose(fp);
-    for (i = 0; i < count; i++) {
-        ids[i] = sales[i].id;
+    int ids[count];
+    if (0 == strcmp(filename, PRODUCTRECORDS)) {
+        Product temp[count];
+        memset(temp, 0, sizeof(temp));
+        getProductData(temp);
+        for (i = 0; i < count; i++) {
+            ids[i] = temp[i].id;
+        }
+    } else if (0 == strcmp(filename, TELLERRECORDS)) {
+        Teller temp[count];
+        memset(temp, 0, sizeof(temp));
+        getTellerData(temp);
+        for (i = 0; i < count; i++) {
+            ids[i] = temp[i].id;
+        }
+    } else if (0 == strcmp(filename, SALERECORDS)) {
+        SaleTransaction temp[count];
+        memset(temp, 0, sizeof(temp));
+        getSaleData(temp);
+        for (i = 0; i < count; i++) {
+            ids[i] = temp[i].id;
+        }
     }
     maxid = maxOfInt(ids, count);
     return maxid;
@@ -1630,7 +1650,12 @@ int getProductByID(Product * productbuffer, int searchID) {
     getProductData(products);
     for (i = 0; i < count; i++) {
         if (products[i].id == searchID) {
-            memcpy(productbuffer, &products[i], sizeof(Product));
+            (*productbuffer).id = products[i].id;
+            strcpy((*productbuffer).name, products[i].name);
+            strcpy((*productbuffer).description, products[i].description);
+            strcpy((*productbuffer).category, products[i].category);
+            strcpy((*productbuffer).unit, products[i].unit);
+            (*productbuffer).unit_price = products[i].unit_price;
             return 0; // found
         }
     }

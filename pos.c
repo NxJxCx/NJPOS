@@ -185,7 +185,7 @@ int CLI(void) {
     printf(" [4] Exit Program\n");
     printf(" ----------------------------------------------\n\n");
     do {
-        printf("Enter Choice: ");
+        printf(" Enter Choice: ");
         dscanc(&choice);
         if (!(choice > 0 && choice < 5))
             printf("Invalid Choice!\n");
@@ -288,7 +288,6 @@ void teller_menu(void) {
         case 5:
             teller_sud_menu("delete");
             break;
-        default:
     }
 }
 /**
@@ -316,7 +315,6 @@ void sales_menu(void) {
         case 2:
             sale_display();
             break;
-        default:
     }
 }
 /**
@@ -418,8 +416,12 @@ void prod_sud_menu(const char * request) {
     printf(" [2] By Product Name\n");
     printf(" [3] Go Back\n");
     printf(" ----------------------------------------------\n");
-    printf(" Choice: ");
-    dscanc(&choice);
+    do {
+        printf(" Choice: ");
+        dscanc(&choice);
+        if (!(choice > 0 && choice < 4))
+            printf(" Invalid Choice!\n");
+    } while (!(choice > 0 && choice < 4));
     switch (choice) {
         case 1:
             int id;
@@ -881,7 +883,12 @@ void teller_sud_menu(const char * request) {
     printf("[3] Go Back\n");
     printf("---------------------------------------------\n");
     printf("Choice: ");
-    scanf("%d", &choice);
+    do {
+        printf(" Choice: ");
+        dscanc(&choice);
+        if (!(choice > 0 && choice < 4))
+            printf(" Invalid Choice!\n");
+    } while (!(choice > 0 && choice < 4));
     switch (choice) {
         case 1:
             int id;
@@ -906,7 +913,6 @@ void teller_sud_menu(const char * request) {
         default:
             teller_menu();
     }
-    getch();
 }
 /**
  * @brief Teller Search/Update/Delete Request by ID
@@ -1044,7 +1050,7 @@ int teller_search_id(int id, const char * request) {
  * @param request "search" | "update" | "delete" #(all other string characters are ignored)
  * @return int 0 - done with search | else still searching
  */
-int teller_search_name(const char * prod_name, const char * request) {
+int teller_search_name(const char * teller_name, const char * request) {
     clrscr();
     int i, k, l = 0, count, selectedIndex = -1, recordsCount = 0, selectedID = -1;
     char endchoice, first_name[26], middle_name[26], last_name[26];
@@ -1063,7 +1069,7 @@ int teller_search_name(const char * prod_name, const char * request) {
     for (i=0; i < count; i++) {
         // search for first name
         for (k = 0; k < strlen(tellers[i].first_name); k++) {
-            if (0 == strnicmp(tellers[i].first_name + k, prod_name, strlen(prod_name))) {
+            if (0 == strnicmp(tellers[i].first_name + k, teller_name, strlen(teller_name))) {
                 // copy to selected
                 tellerSelected[l].id = tellers[i].id;
                 strcpy(tellerSelected[l].first_name, tellers[i].first_name);
@@ -1074,17 +1080,22 @@ int teller_search_name(const char * prod_name, const char * request) {
                 // copy to display
                 strcpy(first_name, centerTheString(tellers[i].first_name, sizeof(first_name)));
                 strcpy(middle_name, centerTheString(tellers[i].middle_name, sizeof(middle_name)));
+
                 strcpy(last_name, centerTheString(tellers[i].last_name, sizeof(last_name)));
+
                 // display data
-                printf("  %08d %s%s%s%s", tellers[i].id, first_name, middle_name, last_name);
+                printf("  %08d %s%s%s\n", tellers[i].id, first_name, middle_name, last_name);
                 recordsCount++;
                 l++; // l for tellerSelected index
-                goto EndBreak; // break for k loop since name has been found
+                break; // break for k loop since name has been found
             }
         }
         // if not first name; then middle name
         for (k = 0; k < strlen(tellers[i].middle_name); k++) {
-            if (0 == strnicmp(tellers[i].middle_name + k, prod_name, strlen(prod_name))) {
+            if (0 == strnicmp(tellers[i].middle_name + k, teller_name, strlen(teller_name))) {
+                if (l > 0)
+                    if (tellerSelected[l-1].id == tellers[i].id)
+                        break; // already selected so skip
                 // copy to selected
                 tellerSelected[l].id = tellers[i].id;
                 strcpy(tellerSelected[l].first_name, tellers[i].first_name);
@@ -1097,15 +1108,18 @@ int teller_search_name(const char * prod_name, const char * request) {
                 strcpy(middle_name, centerTheString(tellers[i].middle_name, sizeof(middle_name)));
                 strcpy(last_name, centerTheString(tellers[i].last_name, sizeof(last_name)));
                 // display data
-                printf("  %08d %s%s%s%s", tellers[i].id, first_name, middle_name, last_name);
+                printf("  %08d %s%s%s\n", tellers[i].id, first_name, middle_name, last_name);
                 recordsCount++;
                 l++; // l for tellerSelected index
-                goto EndBreak; // break for k loop since name has been found
+                break; // break for k loop since name has been found
             }
         }
         // if not first and middle name; then last name
         for (k = 0; k < strlen(tellers[i].last_name); k++) {
-            if (0 == strnicmp(tellers[i].last_name + k, prod_name, strlen(prod_name))) {
+            if (0 == strnicmp(tellers[i].last_name + k, teller_name, strlen(teller_name))) {
+                if (l > 0)
+                    if (tellerSelected[l-1].id == tellers[i].id)
+                        break; // already selected so skip
                 // copy to selected
                 tellerSelected[l].id = tellers[i].id;
                 strcpy(tellerSelected[l].first_name, tellers[i].first_name);
@@ -1118,14 +1132,12 @@ int teller_search_name(const char * prod_name, const char * request) {
                 strcpy(middle_name, centerTheString(tellers[i].middle_name, sizeof(middle_name)));
                 strcpy(last_name, centerTheString(tellers[i].last_name, sizeof(last_name)));
                 // display data
-                printf("  %08d %s%s%s%s", tellers[i].id, first_name, middle_name, last_name);
+                printf("  %08d %s%s%s\n", tellers[i].id, first_name, middle_name, last_name);
                 recordsCount++;
                 l++; // l for tellerSelected index
-                goto EndBreak; // break for k loop since name has been found
+                break; // break for k loop since name has been found
             }
         }
-        EndBreak: // redirection for found names
-            break;
     }
     if (recordsCount > 0)
         goto Found;
@@ -1158,8 +1170,8 @@ int teller_search_name(const char * prod_name, const char * request) {
                 selectedIndex = selectedIndexes[0];
                 selectedTeller.id = tellerSelected[0].id;
                 strcpy(selectedTeller.first_name, tellerSelected[0].first_name);
-                strcpy(selectedTeller.middle_name, tellerSelected[i].middle_name);
-                strcpy(selectedTeller.last_name, tellerSelected[i].last_name);
+                strcpy(selectedTeller.middle_name, tellerSelected[0].middle_name);
+                strcpy(selectedTeller.last_name, tellerSelected[0].last_name);
             }
             IDSelectedUpdate: // ID has selected label
                 char savedata;
@@ -1274,7 +1286,7 @@ void sale_new(void) {
     FILE * fp;
     char choice, i, appendDisplay[5000], buffile[MAX_NAME], datenow[TIME_SIZE], timenow[TIME_SIZE];
     int searchID, latestID, count = 0, index = 0;
-    float payable_amount, cash, change;
+    float payable_amount, cash = -1.0, change;
     time_t t;
     struct tm * tmp;
     time(&t); // set time
@@ -1323,10 +1335,13 @@ void sale_new(void) {
     sprintf(appendDisplay, " _____________________________________\n");
     sprintf(appendDisplay, " Total Payable Amount:\t%.2f", payable_amount);
     sprintf(appendDisplay, " Cash: ");
-    // display total
-    printf("%s", appendDisplay);
-    // get cash amount
-    scanf("%.2f", &cash);
+    do {
+        clrscr();
+        // display total
+        printf("%s", appendDisplay);
+        // get cash amount
+        customScanfDefaultFloat(&cash, -1.0);
+    } while (cash < 0);
     // compute change
     change = compute_change(payable_amount, cash);
     sprintf(appendDisplay, "%.2f\n", cash);
@@ -1451,7 +1466,6 @@ int getLatestID(const char * filename, int recordsize) {
     fclose(fp);
     for (i = 0; i < count; i++) {
         ids[i] = sales[i].id;
-        printf("ID #%d: %d\n", i, ids[i]);
     }
     maxid = maxOfInt(ids, count);
     return maxid;

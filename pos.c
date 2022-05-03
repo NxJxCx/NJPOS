@@ -413,10 +413,8 @@ void teller_search_id(int id, const char * request) {
 void teller_search_name(const char * prod_name, const char * request) {
 
 }
-/**/**
+/**
  * @brief 
- * 
- */
  * 
  */
 void sale_new(void) {
@@ -446,7 +444,7 @@ void sale_display(void) {
         printf("Product ID : "); // We will use product ID...
         scanf("%d", &searchID); // ...rather than Product name for input to search the specific existing product
         // searching for product details by ID and put it in the SaleTransaction data
-        while (getProductByID(&sale.items[count].product) != 0) { // loop while product id does not exists in records
+        while (getProductByID(&sale.items[count].product, searchID) != 0) { // loop while product id does not exists in records
             printf("Product not found!\n");
             getch();
             clrscr(); // clear the command line screen

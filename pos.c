@@ -163,7 +163,7 @@ int main(int argc, char * argv[]) {
         if (CLI() == 4) // 4 = exit
             break;
     }
-    printf("Thank you for using this Point of Sales System (POS). Goodbye!");
+    printf(" => Thank you for using this Point of Sales (POS) System. Goodbye!");
     getch(); // pause before exit
     return 0;
 }
@@ -177,13 +177,13 @@ int main(int argc, char * argv[]) {
 int CLI(void) {
     clrscr();
     int choice = 0;
-    printf(" ---------- Welcome To NJC Enterprise ----------\n");
+    printf("\n ---------- Welcome To NJC Enterprise ----------\n");
     printf(" Please select:\n\n");
     printf(" [1] Product Details\n");
     printf(" [2] Teller Details\n");
     printf(" [3] Sale Transaction\n");
     printf(" [4] Exit Program\n");
-    printf(" ----------------------------------------------\n\n");
+    printf("\n ----------------------------------------------\n\n");
     do {
         printf(" Enter Choice: ");
         dscanc(&choice);
@@ -210,14 +210,14 @@ int CLI(void) {
 void prod_menu(void) {
     clrscr();
     int choice;
-    printf(" ---------- Product Details ----------\n\n");
+    printf("\n ---------- Product Details ----------\n\n");
     printf(" [1] Add\n");
     printf(" [2] Display\n");
     printf(" [3] Search\n");
     printf(" [4] Update\n");
     printf(" [5] Delete\n");
     printf(" [6] Go Back\n");
-    printf(" -------------------------------------\n\n");
+    printf("\n -------------------------------------\n\n");
     do {
         printf(" Choice: ");
         dscanc(&choice);
@@ -258,14 +258,14 @@ void prod_menu(void) {
 void teller_menu(void) {
     clrscr();
     int choice;
-    printf(" ---------- Teller Details ----------\n\n");
+    printf("\n ---------- Teller Details ----------\n\n");
     printf(" [1] Add\n");
     printf(" [2] Display\n");
     printf(" [3] Search\n");
     printf(" [4] Update\n");
     printf(" [5] Delete\n");
     printf(" [6] Go Back\n");
-    printf(" -------------------------------------\n\n");
+    printf("\n -------------------------------------\n\n");
     do {
         printf(" Choice: ");
         dscanc(&choice);
@@ -297,11 +297,11 @@ void teller_menu(void) {
 void sales_menu(void) {
     clrscr();
     int choice;
-    printf(" ---------- Sale Transaction ----------\n\n");
+    printf("\n ---------- Sale Transaction ----------\n\n");
     printf(" [1] New Transaction\n");
     printf(" [2] Display Transaction\n");
     printf(" [3] Go Back\n");
-    printf(" --------------------------------------\n\n");
+    printf("\n --------------------------------------\n\n");
     do {
         printf(" Choice: ");
         dscanc(&choice);
@@ -338,7 +338,7 @@ int prod_add(void) {
     fflush(stdin);
     product[index].id = getLatestID(PRODUCTRECORDS, sizeof(Product)); // set product id + 1 to the latest id
     product[index].id++;
-    printf(" ---------- Add Product Details ----------\n\n");
+    printf("\n ---------- Add Product Details ----------\n\n");
     printf(" Product ID : %d\n", product[index].id);
     printf(" Product Name : ");
     fflush(stdin);
@@ -383,8 +383,8 @@ void prod_display(void) {
     if (count < 1)
         goto displayEmptyResults; // redirect to empty records
     getProductData(products); // get product data
-    printf(" ---------- Display Product Details ----------\n\n");
-    printf(" %s%s%s%s%s%s\n", "Product ID", "    Product Name    ", "Product Description ", "  Product Category  ", "    Product Unit    ", " Product Unit Price ");
+    printf("\n ---------- Display Product Details ----------\n\n");
+    printf(" %s%s%s%s%s%s\n\n", "Product ID", "    Product Name    ", "Product Description ", "  Product Category  ", "    Product Unit    ", " Product Unit Price ");
     for (i = 0; i < count; i++) {
         strcpy(name, centerTheString(products[i].name, sizeof(name)));
         strcpy(desc, centerTheString(products[i].description, sizeof(desc)));
@@ -399,8 +399,8 @@ void prod_display(void) {
     getch();
     return; // end of display
     displayEmptyResults: // label for displaying empty product details
-        printf(" ---------- Display Product Details ----------\n\n");
-        printf(" %s%s%s%s%s%s\n", "Product ID", "    Product Name    ", "Product Description ", "  Product Category  ", "    Product Unit    ", " Product Unit Price ");
+        printf("\n ---------- Display Product Details ----------\n\n");
+        printf(" %s%s%s%s%s%s\n\n", "Product ID", "    Product Name    ", "Product Description ", "  Product Category  ", "    Product Unit    ", " Product Unit Price ");
         printf("\n ---------------------------------------------\n\n");
         getch();
 }
@@ -411,11 +411,11 @@ void prod_display(void) {
 void prod_sud_menu(const char * request) {
     clrscr();
     int choice;
-    printf(" ---------- %s Product Details ----------\n\n", capitalize(request));
+    printf("\n ---------- %s Product Details ----------\n\n", capitalize(request));
     printf(" [1] By Product ID\n");
     printf(" [2] By Product Name\n");
     printf(" [3] Go Back\n");
-    printf(" ----------------------------------------------\n");
+    printf("\n ----------------------------------------------\n");
     do {
         printf(" Choice: ");
         dscanc(&choice);
@@ -465,8 +465,8 @@ int prod_search_id(int id, const char * request) {
     if (count < 1)
         goto NoRecords; // no records found since count is 0
     getProductData(products); // read from file to products struct
-    printf(" ---------- %s Product Details ----------\n\n", capitalize(request));
-    printf(" %s%s%s%s%s%s\n", "Product ID", "    Product Name    ", "Product Description ", "  Product Category  ", "    Product Unit    ", " Product Unit Price ");
+    printf("\n ---------- %s Product Details ----------\n\n", capitalize(request));
+    printf(" %s%s%s%s%s%s\n\n", "Product ID", "    Product Name    ", "Product Description ", "  Product Category  ", "    Product Unit    ", " Product Unit Price ");
     for (i=0; i < count; i++) {
         if (products[i].id == id) {
             selectedIndex = i;
@@ -576,7 +576,7 @@ int prod_search_id(int id, const char * request) {
     EndRec:
         return 0;
     NoRecords:
-        printf(" ---------- %s Product Details ----------\n\n", capitalize(request));
+        printf("\n ---------- %s Product Details ----------\n\n", capitalize(request));
     EndNoRecTable:
         printf(" => No Records found\n");
         printf("\n ---------------------------------------------\n\n");
@@ -612,8 +612,8 @@ int prod_search_name(const char * prod_name, const char * request) {
     if (count < 1)
         goto NoRecords; // no records found since count is 0
     getProductData(products); // read from file to products struct
-    printf(" ---------- %s Product Details ----------\n\n", capitalize(request));
-    printf(" %s%s%s%s%s%s\n", "Product ID", "    Product Name    ", "Product Description ", "  Product Category  ", "    Product Unit    ", " Product Unit Price ");
+    printf("\n ---------- %s Product Details ----------\n\n", capitalize(request));
+    printf(" %s%s%s%s%s%s\n\n", "Product ID", "    Product Name    ", "Product Description ", "  Product Category  ", "    Product Unit    ", " Product Unit Price ");
     for (i=0; i < count; i++) {
         for (k = 0; k < strlen(products[i].name); k++) {
             if (0 == strnicmp(products[i].name + k, prod_name, strlen(prod_name))) {
@@ -778,7 +778,7 @@ int prod_search_name(const char * prod_name, const char * request) {
     EndRec:
         return 0;
     NoRecords:
-        printf(" ---------- %s Product Details ----------\n\n", capitalize(request));
+        printf("\n ---------- %s Product Details ----------\n\n", capitalize(request));
     EndNoRecTable:
         printf(" => No Records found\n");
         printf("\n ---------------------------------------------\n\n");
@@ -814,7 +814,7 @@ int teller_add(void) {
     fflush(stdin);
     teller[index].id = getLatestID(TELLERRECORDS, sizeof(Teller)); // set teller id + 1 to the latest id
     teller[index].id++;
-    printf(" ---------- Add Teller Details ----------\n\n");
+    printf("\n ---------- Add Teller Details ----------\n\n");
     printf(" Teller ID : %d\n", teller[index].id);
     printf(" Teller First Name : ");
     fflush(stdin);
@@ -852,8 +852,8 @@ void teller_display(void) {
     if (count < 1)
         goto displayEmptyResults; // redirect to empty records
     getTellerData(tellers); // get teller records
-    printf(" ---------- Display Teller Details ----------\n\n");
-    printf(" %s%s%s%s\n", "Teller ID", "     Teller First Name    ", "    Teller Middle Name    ", "     Teller Last Name     ");
+    printf("\n ---------- Display Teller Details ----------\n\n");
+    printf(" %s%s%s%s\n\n", "Teller ID", "     Teller First Name    ", "    Teller Middle Name    ", "     Teller Last Name     ");
     for (i = 0; i < count; i++) {
         strcpy(first_name, centerTheString(tellers[i].first_name, sizeof(first_name)));
         strcpy(middle_name, centerTheString(tellers[i].middle_name, sizeof(middle_name)));
@@ -865,8 +865,8 @@ void teller_display(void) {
     getch();
     return; // end of display
     displayEmptyResults: // label for displaying empty teller details
-        printf(" ---------- Display Teller Details ----------\n\n");
-        printf(" %s%s%s%s\n", "Teller ID", "     Teller First Name    ", "    Teller Middle Name    ", "     Teller Last Name     ");
+        printf("\n ---------- Display Teller Details ----------\n\n");
+        printf(" %s%s%s%s\n\n", "Teller ID", "     Teller First Name    ", "    Teller Middle Name    ", "     Teller Last Name     ");
         printf("\n --------------------------------------------\n\n");
         getch();
 }
@@ -877,11 +877,11 @@ void teller_display(void) {
 void teller_sud_menu(const char * request) {
     clrscr();
     int choice;
-    printf("---------- %s Teller Details ----------\n\n", capitalize(request));
-    printf("[1] By Teller ID\n");
-    printf("[2] By Teller Name\n");
-    printf("[3] Go Back\n");
-    printf("---------------------------------------------\n");
+    printf("\n ---------- %s Teller Details ----------\n\n", capitalize(request));
+    printf(" [1] By Teller ID\n");
+    printf(" [2] By Teller Name\n");
+    printf(" [3] Go Back\n");
+    printf("\n ---------------------------------------------\n");
     printf("Choice: ");
     do {
         printf(" Choice: ");
@@ -932,8 +932,8 @@ int teller_search_id(int id, const char * request) {
     if (count < 1)
         goto NoRecords; // no records found since count is 0
     getTellerData(tellers); // read from file to tellers struct
-    printf(" ---------- %s Teller Details ----------\n\n", capitalize(request));
-    printf(" %s%s%s%s\n", "Teller ID", "     Teller First Name    ", "    Teller Middle Name    ", "     Teller Last Name     ");
+    printf("\n ---------- %s Teller Details ----------\n\n", capitalize(request));
+    printf(" %s%s%s%s\n\n", "Teller ID", "     Teller First Name    ", "    Teller Middle Name    ", "     Teller Last Name     ");
     for (i=0; i < count; i++) {
         if (tellers[i].id == id) {
             selectedIndex = i;
@@ -1028,7 +1028,7 @@ int teller_search_id(int id, const char * request) {
     EndRec:
         return 0;
     NoRecords:
-        printf(" ---------- %s Teller Details ----------\n\n", capitalize(request));
+        printf("\n ---------- %s Teller Details ----------\n\n", capitalize(request));
     EndNoRecTable:
         printf(" => No Records found\n");
         printf("\n ---------------------------------------------\n\n");
@@ -1064,8 +1064,8 @@ int teller_search_name(const char * teller_name, const char * request) {
     if (count < 1)
         goto NoRecords; // no records found since count is 0
     getTellerData(tellers); // read from file to tellers struct
-    printf(" ---------- %s Teller Details ----------\n\n", capitalize(request));
-    printf(" %s%s%s%s\n", "Teller ID", "     Teller First Name    ", "    Teller Middle Name    ", "     Teller Last Name     ");
+    printf("\n ---------- %s Teller Details ----------\n\n", capitalize(request));
+    printf(" %s%s%s%s\n\n", "Teller ID", "     Teller First Name    ", "    Teller Middle Name    ", "     Teller Last Name     ");
     for (i=0; i < count; i++) {
         // search for first name
         for (k = 0; k < strlen(tellers[i].first_name); k++) {
@@ -1262,7 +1262,7 @@ int teller_search_name(const char * teller_name, const char * request) {
     EndRec:
         return 0;
     NoRecords:
-        printf(" ---------- %s Teller Details ----------\n\n", capitalize(request));
+        printf("\n ---------- %s Teller Details ----------\n\n", capitalize(request));
     EndNoRecTable:
         printf(" => No Records found\n");
         printf("\n ---------------------------------------------\n\n");
@@ -1284,27 +1284,32 @@ int teller_search_name(const char * teller_name, const char * request) {
 void sale_new(void) {
     clrscr();
     FILE * fp;
-    char choice, i, appendDisplay[5000], buffile[MAX_NAME], datenow[TIME_SIZE], timenow[TIME_SIZE];
-    int searchID, latestID, count = 0, index = 0;
+    fflush(stdin);
+    char choice, i, appendDisplay[5000], buffile[MAX_NAME], datenow[TIME_SIZE], timenow[TIME_SIZE], tempbuf[MAX_NAME];
+    int searchID, latestID, count = 0, index = 0, tempQuantity = -1;
     float payable_amount, cash = -1.0, change;
     time_t t;
     struct tm * tmp;
     time(&t); // set time
     tmp = localtime(&t); // set localtime
+    memset(appendDisplay, 0, sizeof(appendDisplay)); // set appendDisplay to empty string
+    memset(buffile, 0, sizeof(buffile)); // set to empty
+    memset(datenow, 0, sizeof(datenow)); // set to empty
+    memset(timenow, 0, sizeof(timenow)); // set to empty
     strftime(datenow, sizeof(datenow), "%Y-%m-%d", tmp); // format will be 2022-12-25 for the filename
-    sprintf(buffile, SALETRANSACTIONS, timenow); // we will use time for the filename
-    memset(appendDisplay, 0, 5000*sizeof(appendDisplay[0])); // set appendDisplay to empty string
+    sprintf(buffile, SALETRANSACTIONS, datenow); // we will use date for the filename
     index = getRecordCount(SALERECORDS, sizeof(SaleTransaction));
     count = index;
     latestID = getLatestID(SALERECORDS, sizeof(SaleTransaction)) + 1;
     SaleTransaction sale[MAX_ITEMS];
     memset(sale, 0, sizeof(sale));
     getSaleData(sale);
-    sprintf(appendDisplay, "\n ---------- New Transaction ----------\n");
+    strcat(appendDisplay, "\n ---------- New Transaction ----------\n");
     do {
         memset(&sale[index], 0, sizeof(sale[index])); // set SaleTransaction data to empty or 0
         memset(&sale[index].product, 0, sizeof(sale[index].product)); // set the Product data empty or 0
-        sprintf(appendDisplay, "\n Sale ID : %d\n", latestID++); // increment the latestID of recorded sale transaction
+        sprintf(tempbuf, "\n Sale ID : %d\n%c", latestID++, 0);
+        strcat(appendDisplay, tempbuf); // increment the latestID of recorded sale transaction
         do {
             clrscr();
             printf("%s", appendDisplay);
@@ -1313,15 +1318,30 @@ void sale_new(void) {
         } while (getProductByID(&sale[count].product, searchID) != 0); // searching for product details by ID and put it in the SaleTransaction data
         
         // append display to appendDisplay variable string of the selected product details     
-        sprintf(appendDisplay, " Product Name : %s\n", sale[count].product.name);
-        sprintf(appendDisplay, " Product Unit : %s\n", sale[count].product.unit);
-        sprintf(appendDisplay, " Product Price : %.2f\n", sale[count].product.unit_price);
-        sprintf(appendDisplay, " Quantity : %d\n", &sale[count].quantity);
+        sprintf(tempbuf, " Product Name : %s\n%c", sale[count].product.name, 0);
+        strcat(appendDisplay, tempbuf);
+        sprintf(tempbuf, " Product Unit : %s\n%c", sale[count].product.unit, 0);
+        strcat(appendDisplay, tempbuf);
+        sprintf(tempbuf, " Product Price : %.2f\n%c", sale[count].product.unit_price, 0);
+        strcat(appendDisplay, tempbuf);
+        strcat(appendDisplay, " Quantity : ");
+        do {
+            clrscr();
+            printf("%s", appendDisplay);
+            customScanfDefaultInt(&tempQuantity, -1);
+            if (tempQuantity < 1) {
+                printf(" => Quantity should be greater (>) than 0.\n");
+                getch();
+            }
+        } while (tempQuantity < 0);
+        sale[count].quantity = tempQuantity;
+        sprintf(tempbuf, "%d\n%c", sale[count].quantity, 0);
+        strcat(appendDisplay, tempbuf);
         clrscr(); // clear the command line screen
         printf("%s", appendDisplay); // display previous and current product details of selected products
         count++; // increment the count of latest new records
         do {
-            printf(" Do you want to add another item?\n");
+            printf("\n Do you want to add another item?\n");
             printf(" Type 'y' if yes, 'n' if no: ");
             cscanc(&choice);
             if (!(choice == 'n' || choice == 'N' || choice == 'y' || choice == 'Y'))
@@ -1332,26 +1352,35 @@ void sale_new(void) {
     clrscr(); // clear the command line screen
     payable_amount = compute_payable_amount(sale + index, count-index);
     // record payable amount
-    sprintf(appendDisplay, " _____________________________________\n");
-    sprintf(appendDisplay, " Total Payable Amount:\t%.2f", payable_amount);
-    sprintf(appendDisplay, " Cash: ");
+    strcat(appendDisplay, " _____________________________________\n");
+    sprintf(tempbuf, " Total Payable Amount:\t%.2f\n%c", payable_amount, 0);
+    strcat(appendDisplay, tempbuf);
+    strcat(appendDisplay, " Cash: ");
     do {
         clrscr();
         // display total
         printf("%s", appendDisplay);
         // get cash amount
         customScanfDefaultFloat(&cash, -1.0);
-    } while (cash < 0);
+        if (cash < payable_amount) {
+            printf(" => Cash should be more than or equal to the total payable amount! Try again.\n");
+            getch();
+        }
+    } while (cash < payable_amount);
     // compute change
     change = compute_change(payable_amount, cash);
-    sprintf(appendDisplay, "%.2f\n", cash);
-    sprintf(appendDisplay, "\n Change: %.2f", change);
+    sprintf(tempbuf, "%.2f\n%c", cash, 0);
+    strcat(appendDisplay, tempbuf);
+    sprintf(tempbuf, "\n Change: %.2f%c", change, 0);
+    strcat(appendDisplay, tempbuf);
     printf("\n Change: %.2f\n", change);
     time(&t); // set time
     tmp = localtime(&t); // set localtime
     strftime(timenow, sizeof(timenow), "%H:%M:%S", tmp); // format will be 24:59:59 for the time of transaction
-    sprintf(appendDisplay, "\n Date: %s\n", datenow);
-    sprintf(appendDisplay, "\n Time: %s\n", timenow);
+    sprintf(tempbuf, "\n Date: %s\n%c", datenow, 0);
+    strcat(appendDisplay, tempbuf);
+    sprintf(tempbuf, "\n Time: %s\n%c", timenow, 0);
+    strcat(appendDisplay, tempbuf);
     // write to bin file
     if (0 != saveSaleTransactionToFile(sale, count)) {
         fprintf(stderr, "Failed to write sales transaction records file. Sale Transaction was not saved");
@@ -1371,6 +1400,7 @@ void sale_new(void) {
  * 
  */
 void sale_display(void) {
+    clrscr();
     int i, j, count, size;
     char name[20], p_unit[20], p_price[16];
     count = getRecordCount(SALERECORDS, sizeof(SaleTransaction));
@@ -1378,21 +1408,23 @@ void sale_display(void) {
     if (count < 1)
         goto displayEmptyResults;
     getSaleData(sales);
-    displayResults: // label for displaying product details
-        printf(" ---------- Display Transaction ----------\n\n");
-        printf(" %s%s%s%s%s\n", "  Sale ID ", "    Product Name    ", "    Product Unit    ", " Product Unit Price ", " Quantity ");
-        for (i = 0; i < count; i++) {
-            strcpy(name, centerTheString(sales[i].product.name, sizeof(name)));
-            strcpy(p_unit, centerTheString(sales[i].product.unit, sizeof(p_unit)));
-            strcpy(p_price, rightAlignFloat(sales[i].product.unit_price, sizeof(p_price)));
-            // display data
-            printf(" %08d %s%s%s   %d\n", sales[i].id, name, p_unit, p_price, sales[i].quantity);
-        }
-        printf("\n ---------------------------------------------\n");
+    printf("\n ---------- Display Transaction ----------\n\n");
+    printf(" %s%s%s%s%s\n\n", "  Sale ID ", "    Product Name    ", "    Product Unit    ", " Product Unit Price ", " Quantity ");
+    for (i = 0; i < count; i++) {
+        strcpy(name, centerTheString(sales[i].product.name, sizeof(name)));
+        strcpy(p_unit, centerTheString(sales[i].product.unit, sizeof(p_unit)));
+        strcpy(p_price, rightAlignFloat(sales[i].product.unit_price, sizeof(p_price)));
+        // display data
+        printf(" %08d %s%s%s   %d\n", sales[i].id, name, p_unit, p_price, sales[i].quantity);
+    }
+    printf("\n ---------------------------------------------\n");
+    getch();
+    return;
     displayEmptyResults:
-        printf(" ---------- Display Transaction ----------\n\n");
-        printf(" %s%s%s%s%s\n", "  Sale ID ", "    Product Name    ", "    Product Unit    ", " Product Unit Price ", " Quantity ");
+        printf("\n ---------- Display Transaction ----------\n\n");
+        printf(" %s%s%s%s%s\n\n", "  Sale ID ", "    Product Name    ", "    Product Unit    ", " Product Unit Price ", " Quantity ");
         printf("\n ---------------------------------------------\n");
+        getch();
 }
 /**
  * @brief Compute payable amount of sales and return the amount
@@ -1417,7 +1449,7 @@ float compute_payable_amount(SaleTransaction * sale, int count) {
  * @return float Total Change Amount
  */
 float compute_change(float payable_amount, float cash) {
-    return (float)(payable_amount - cash);
+    return (float)(cash - payable_amount);
 }
 /**
  * @brief Get the Record Count from file
@@ -1598,10 +1630,12 @@ int getProductByID(Product * productbuffer, int searchID) {
     getProductData(products);
     for (i = 0; i < count; i++) {
         if (products[i].id == searchID) {
-            *productbuffer = products[i];
+            memcpy(productbuffer, &products[i], sizeof(Product));
             return 0; // found
         }
     }
+    printf(" => Product not found! Try again.\n");
+    getch();
     return -1; // not found
 }
 // other functions
@@ -1756,12 +1790,12 @@ void customScanfDefaultFloat(float * buffer, float defaultVal) {
         goto DefaultValue;
     for (i=0; i < strlen(buf); i++) {
         if (!(isdigit(buf[i]) || buf[i] == '.')) {
-            printf("Invalid Input. Only Numeric characters are allowed!\n");
+            printf(" Invalid Input. Only Numeric characters are allowed!\n");
             goto DefaultValue;
         }
         if (buf[i] == '.') dots++;
         if (dots > 1) {
-            printf("Invalid Input. Cannot input more than one dot character (.) in a numeric input\n");
+            printf(" Invalid Input. Cannot input more than one dot character (.) in a numeric input\n");
             goto DefaultValue;
         }
     }
@@ -1792,12 +1826,12 @@ void customScanfDefaultInt(int * buffer, const int defaultVal) {
         goto DefaultValue;
     for (i=0; i < strlen(buf); i++) {
         if (!(isdigit(buf[i]) || buf[i] == '.')) {
-            printf("Invalid Input. Only Numeric characters are allowed!\n");
+            printf(" Invalid Input. Only Numeric characters are allowed!\n");
             goto DefaultValue;
         }
         if (buf[i] == '.') dots++;
         if (dots > 1) {
-            printf("Invalid Input. Cannot input more than one dot character (.) in a numeric input\n");
+            printf(" Invalid Input. Cannot input more than one dot character (.) in a numeric input\n");
             goto DefaultValue;
         }
     }

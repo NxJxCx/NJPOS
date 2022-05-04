@@ -136,3 +136,19 @@
 
  Date: 2022-05-04
  Time: 14:00:02
+
+ ---------- New Transaction ----------
+
+ Sale ID : 14
+ Product Name : Cloud 9 Overload
+ Product Unit : piece
+ Product Price : 15.00
+ Quantity : 5
+ _____________________________________
+ Total Payable Amount:	75.00
+ Cash: 100.00
+
+ Change: 25.00
+
+ Date: 2022-05-04
+ Time: 16:31:50

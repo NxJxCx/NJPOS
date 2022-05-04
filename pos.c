@@ -79,7 +79,6 @@ char getche(void)
 // Define constants
 #define TIME_SIZE 50
 #define MAX_NAME 250
-#define MAX_ITEMS 2000
 #define PRODUCTRECORDS "product_records.bin"
 #define TELLERRECORDS "teller_records.bin"
 #define SALERECORDS "sale_records.bin"
@@ -1411,10 +1410,10 @@ void sale_add(void) {
     strcat(appendDisplay, tempbuf); // append it
     // append new records to old records
     count = index + newCount; // update total count of records
-    SaleTransaction sale[count]; // sale transaction struct with MAX_ITEMS (2000) as the store capacity of array
+    SaleTransaction sale[count]; // sale transaction struct with count as storage capacity
     memset(sale, 0, sizeof(sale)); // zero-out the sale transaction struct array instance
-    if (index > 0) // if no records,
-        getSaleData(sale); // then skip getting sale data from file to sale struct instance
+    if (index > 0) // if no previous records,
+        getSaleData(sale); // then skip getting sale data from file to sale struct instance else get the sale transaction records data
     j = 0; // j for newSale index
     for (i = index; i < count; i++) {
         // sale id
@@ -1486,8 +1485,8 @@ void sale_display(void) {
  */
 float compute_payable_amount(SaleTransaction * saleArray, int count) {
     int i;
-    float sum, unitPrice, quantity, product;
-    for (i = 0; i < count; i++) { // we will start from the first index of the newly records sale transaction
+    float sum = 0.0, unitPrice, quantity, product; // initialize sum to 0 value
+    for (i = 0; i < count; i++) {
         // copy the value
         unitPrice = saleArray[i].product.unit_price;
         quantity = saleArray[i].quantity;

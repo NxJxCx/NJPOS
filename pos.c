@@ -36,12 +36,12 @@
 #include <time.h>
 #ifdef _WIN32 // for Windows OS only
 #include <conio.h>
-void clrscr(void) {
+void clrscr(void) { // clear the screen terminal
     system("cls");
 }
 #elif __linux__ // for Linux OS only
 #include <termios.h>
-void clrscr(void)
+void clrscr(void) // clear the screen terminal
 {
     system("clear");
 }

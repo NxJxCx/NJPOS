@@ -1,0 +1,22 @@
+
+ ---------- New Transaction ----------
+
+ Sale ID : 1
+ Product Name : Palmolive
+ Product Unit : piece
+ Product Price : 15.00
+ Quantity : 12
+
+ Sale ID : 2
+ Product Name : Safeguard 50 g.
+ Product Unit : piece
+ Product Price : 75.25
+ Quantity : 5
+ _____________________________________
+ Total Payable Amount:	556.25
+ Cash: 1000.00
+
+ Change: 443.75
+
+ Date: 2022-05-04
+ Time: 12:57:00

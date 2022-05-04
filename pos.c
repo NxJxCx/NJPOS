@@ -28,6 +28,7 @@
  * > Quantity
  */
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -105,9 +106,6 @@ typedef struct {
     int quantity; // quantity of product item
 } SaleTransaction; // Sale Transaction with teller details & Item bought
 
-// Define Global Variables
-
-
 // Define Function Prototypes
 int CLI(void); // Command Line Interface
 void prod_menu(void); // Product Details Menu
@@ -147,7 +145,7 @@ void customScanfDefaultString(char * buffer, const char * defaultVal);
 void customScanfDefaultFloat(float * buffer, float defaultVal);
 void customScanfDefaultInt(int * buffer, int defaultVal);
 
-
+// main
 int main(int argc, char * argv[]) {
     FILE * fp; // create binary files if not exists
     if ((fp = fopen(PRODUCTRECORDS, "ab")) == NULL)
@@ -225,30 +223,31 @@ void prod_menu(void) {
             printf(" Invalid Choice!\n");
     } while (!(choice > 0 && choice < 7));
     switch (choice) {
-        case 1:
+        case 1: // add new products
             char cnew;
-            while (prod_add() == 0) {
+            while (prod_add() == 0) { // prod_add() returns 0 if added successfully
                 printf(" Add new product?\n");
                 do {
                     printf(" Type 'y' if yes, 'n' if no: ");
-                    cscanc(&cnew);
+                    cscanc(&cnew); // single-input yes or no if want to add new products after adding one
                 } while (!(cnew == 'y' || cnew == 'Y' || cnew == 'n' || cnew == 'N'));
                 if (cnew == 'n' || cnew == 'N')
                     break;
             }
             break;
-        case 2:
+        case 2: // display products
             prod_display();
             break;
-        case 3:
+        case 3: // search products
             prod_sud_menu("search");
             break;
-        case 4:
+        case 4: // update one product
             prod_sud_menu("update");
             break;
-        case 5:
+        case 5: // delete one product
             prod_sud_menu("delete");
             break;
+        // else go back to menu
     }
 }
 /**
@@ -273,30 +272,31 @@ void teller_menu(void) {
             printf(" Invalid Choice!\n");
     } while (!(choice > 0 && choice < 7));
     switch (choice) {
-        case 1:
+        case 1:  // add new teller details
             char cnew;
-            while (teller_add() == 0) {
+            while (teller_add() == 0) { // teller_add() returns 0 if added successfully
                 printf(" Add new teller?\n");
                 do {
                     printf(" Type 'y' if yes, 'n' if no: ");
-                    cscanc(&cnew);
+                    cscanc(&cnew); // single-input yes or no for adding a new teller after adding one
                 } while (!(cnew == 'y' || cnew == 'Y' || cnew == 'n' || cnew == 'N'));
                 if (cnew == 'n' || cnew == 'N')
                     break;
             }
             break;
-        case 2:
+        case 2: // display teller details
             teller_display();
             break;
-        case 3:
+        case 3: // search teller details
             teller_sud_menu("search");
             break;
-        case 4:
+        case 4: // update one teller detail
             teller_sud_menu("update");
             break;
-        case 5:
+        case 5: // delete one teller detail
             teller_sud_menu("delete");
             break;
+        // else go back to menu
     }
 }
 /**
@@ -313,17 +313,18 @@ void sales_menu(void) {
     printf("\n --------------------------------------\n\n");
     do {
         printf(" Choice: ");
-        dscanc(&choice);
+        dscanc(&choice); // single-input integer value choose from 1-3
         if (!(choice > 0 && choice < 4))
             printf(" Invalid Choice!\n");
     } while (!(choice > 0 && choice < 4));
     switch (choice) {
-        case 1:
+        case 1: // add new sale transaction
             sale_new();
             break;
-        case 2:
+        case 2: //  display all sale transaction records
             sale_display();
             break;
+        // else go back to menu
     }
 }
 /**
@@ -332,25 +333,25 @@ void sales_menu(void) {
  * @return int [0] if saved; else canceled / not saved;
  */
 int prod_add(void) {
-    clrscr();
-    int count, index;
-    char save;
-    index = getRecordCount(PRODUCTRECORDS, sizeof(Product));
-    count = index + 1;
-    Product product[count];
+    clrscr(); // clear the screen terminal
+    int count, index; // count - count of new records; index - the last count before adding one record.
+    char save; // for yes or no if want to save record or not
+    index = getRecordCount(PRODUCTRECORDS, sizeof(Product)); // last count of records before appending
+    count = index + 1; // new count of records after adding one record
+    Product product[count]; // Product struct instance array with count as to how many data can store since we will add new data
     if (index == 0) { // if record has no records at all
-        memset(&product[0], 0, sizeof(Product));
+        memset(&product[0], 0, sizeof(Product)); // clear/zero out the first element of product array
     } else { // if record has records
-        memset(product, 0, sizeof(product));
-        getProductData(product);
+        memset(product, 0, sizeof(product)); // clear/zero out all the elements of product array
+        getProductData(product); // get the Product data from the .bin file and store it to products
     }
-    fflush(stdin);
-    product[index].id = getLatestID(PRODUCTRECORDS, sizeof(Product)); // set product id + 1 to the latest id
-    product[index].id++;
+    product[index].id = getLatestID(PRODUCTRECORDS, sizeof(Product)); // get the latest maximum id of records in Product records
+    product[index].id++; // set product id + 1 to the latest id
+    // display add new record fields
     printf("\n ---------- Add Product Details ----------\n\n");
     printf(" Product ID : %d\n", product[index].id);
     printf(" Product Name : ");
-    fflush(stdin);
+    fflush(stdin); // for scanf purposes
     scanf("%[^\n]s", product[index].name); // %[^\n]s reads inputted text after newline or [Enter] character '\n'
     fflush(stdin); // we need fflush because we use %[^\n]s format
     printf(" Product Description : ");
@@ -364,19 +365,21 @@ int prod_add(void) {
     fflush(stdin); // we need fflush because we use %[^\n]s format
     do {
         printf(" Product Unit Price : ");
-        customScanfDefaultFloat(&product[index].unit_price, -1.0);
+        customScanfDefaultFloat(&product[index].unit_price, -1.0); // custom scanf with default value -1.0 if empty input or invalid input and put float value in product[index].unit_price
     } while (product[index].unit_price < 0.0);// if inputted amount is invalid, repeat input
-    printf("\n Save these data?\n");
+    printf("\n Save these data?\n"); // prompt to save data
     do {
         printf(" Type 'y' if yes, 'n' if no: ");
-        cscanc(&save);
+        cscanc(&save); // single-input character scan yes or no
         if (save == 'N' || save == 'n')
             return -1; // cancelled / not saved
     } while (!(save == 'y' || save == 'Y'));
-    if (0 == saveProductToFile(product, count))
+    if (0 == saveProductToFile(product, count)) // 0 means product has saved successfully else error has occured
         printf("\n => Product added successfully!\n\n");
-    else
+    else {
         printf("\n => ERROR WRITING TO FILE. Product add failed.");
+        return -1;
+    }
     return 0;
 }
 /**
@@ -384,25 +387,27 @@ int prod_add(void) {
  * 
  */
 void prod_display(void) {
-    clrscr();
+    clrscr(); // clear the screen
     int i, count = 0;
-    char name[20], desc[20], cat[20], p_unit[20], p_price[15]; 
-    count = getRecordCount(PRODUCTRECORDS, sizeof(Product));
-    Product products[count];
-    if (count < 1)
+    char name[20], desc[20], cat[20], p_unit[20], p_price[15]; // product details char buffer for center and right-align positions purposes of string
+    count = getRecordCount(PRODUCTRECORDS, sizeof(Product)); // get the record count of product records
+    Product products[count]; // declare product struct instance array with count as to how many data can be stored
+    if (count < 1) // if no records
         goto displayEmptyResults; // redirect to empty records
     getProductData(products); // get product data
     printf("\n ---------- Display Product Details ----------\n\n");
     printf(" %s%s%s%s%s%s\n\n", "Product ID", "    Product Name    ", "Product Description ", "  Product Category  ", "    Product Unit    ", " Product Unit Price ");
     for (i = 0; i < count; i++) {
+        // copy to buffer for center positions
         strcpy(name, centerTheString(products[i].name, sizeof(name)));
         strcpy(desc, centerTheString(products[i].description, sizeof(desc)));
         strcpy(cat, centerTheString(products[i].category, sizeof(cat)));
         strcpy(p_unit, centerTheString(products[i].unit, sizeof(p_unit)));
         // display data
         printf("  %08d %s%s%s%s", products[i].id, name, desc, cat, p_unit);
+        // copy to buffer for right-align position
         strcpy(p_price, rightAlignFloat(products[i].unit_price, sizeof(p_price)));
-        printf("%s\n", p_price);
+        printf("%s\n", p_price); // display price
     }
     printf("\n ---------------------------------------------\n\n");
     getch();
@@ -418,42 +423,44 @@ void prod_display(void) {
  * 
  */
 void prod_sud_menu(const char * request) {
-    clrscr();
+    clrscr(); // clear the screen terminal
     int choice;
-    printf("\n ---------- %s Product Details ----------\n\n", capitalize(request));
+    printf("\n ---------- %s Product Details ----------\n\n", capitalize(request)); // capitalize the first letter of request char* argument
     printf(" [1] By Product ID\n");
     printf(" [2] By Product Name\n");
     printf(" [3] Go Back\n");
     printf("\n ----------------------------------------------\n");
     do {
         printf(" Choice: ");
-        dscanc(&choice);
+        dscanc(&choice); // custom single-input integer scan
         if (!(choice > 0 && choice < 4))
             printf(" Invalid Choice!\n");
-    } while (!(choice > 0 && choice < 4));
+    } while (!(choice > 0 && choice < 4)); // choice is 1-3 only
     switch (choice) {
-        case 1:
+        case 1: // search by ID
             int id;
             fflush(stdin);
             do {
                 printf("\nEnter ID: ");
-                scanf("%d", &id);
+                scanf("%d", &id); // enter valid product id
                 fflush(stdin);
-            } while(prod_search_id(id, request) != 0);
+                // if found, prod_search_id() will return 0
+            } while(prod_search_id(id, request) != 0); // else if not found returns -1
             break;
-        case 2:
+        case 2: // search by product name
             char namesearch[MAX_NAME];
             fflush(stdin);
             do {
                 memset(namesearch, 0, MAX_NAME);
                 strcpy(namesearch, "");
                 printf("\nEnter Product Name: ");
-                scanf("%[^\n]s", &namesearch);
+                scanf("%[^\n]s", &namesearch); // enter characters that is in the product name
                 fflush(stdin);
-            } while(prod_search_name(namesearch, request) != 0);
+                // if found, prod_search_id() will return 0
+            } while(prod_search_name(namesearch, request) != 0); //  else if not found, returns -1
             break;
         default:
-            prod_menu();
+            prod_menu(); // else go back to product menu
     }
 }
 /**
@@ -464,17 +471,17 @@ void prod_sud_menu(const char * request) {
  * @return int 0 - done with search | else still searching
  */
 int prod_search_id(int id, const char * request) {
-    clrscr();
-    int i, count, selectedIndex = -1;
-    char endchoice, name[20], desc[20], cat[20], p_unit[20], p_price[15];
-    count = getRecordCount(PRODUCTRECORDS, sizeof(Product));
-    Product products[count], productSelected; // array of products with count
-    memset(products, 0, sizeof(products));
-    memset(&productSelected, 0, sizeof(productSelected));
+    clrscr(); // clear the screen terminal
+    int i, count, selectedIndex = -1; // selectIndex is the selected index from products struct array instance which is for updating values
+    char endchoice, name[20], desc[20], cat[20], p_unit[20], p_price[15]; // character buffer for positioning in display
+    count = getRecordCount(PRODUCTRECORDS, sizeof(Product)); // current count of records of Product Records
+    Product products[count], productSelected; // array of products with count and a selected product instance for display, update and delete
+    memset(products, 0, sizeof(products)); // clear/zero out the elements of products struct array
+    memset(&productSelected, 0, sizeof(productSelected)); // clear/zero out the selected product struct instance
     if (count < 1)
-        goto NoRecords; // no records found since count is 0
+        goto NoRecords; // redirect to no records found label since record count is 0
     getProductData(products); // read from file to products struct
-    printf("\n ---------- %s Product Details ----------\n\n", capitalize(request));
+    printf("\n ---------- %s Product Details ----------\n\n", capitalize(request)); // capitalize first letter of request argument
     printf(" %s%s%s%s%s%s\n\n", "Product ID", "    Product Name    ", "Product Description ", "  Product Category  ", "    Product Unit    ", " Product Unit Price ");
     for (i=0; i < count; i++) {
         if (products[i].id == id) {
@@ -506,7 +513,8 @@ int prod_search_id(int id, const char * request) {
         if (0 == strcmp(request, "update")) {
             char savedata;
             Product oldData;
-            memset(&oldData, 0, sizeof(Product));
+            memset(&oldData, 0, sizeof(Product)); // zero-out oldData product struct
+            // copy product selected data to oldData struct variable
             oldData.id = productSelected.id;
             strcpy(oldData.name, productSelected.name);
             strcpy(oldData.description, productSelected.description);
@@ -518,6 +526,7 @@ int prod_search_id(int id, const char * request) {
             printf(" => Update Data:\n");
             printf(" Product ID : %08d\n", oldData.id);
             printf(" Product Name (%s): ", oldData.name);
+            // if input is empty or invalid, updates to default value which is the old data
             customScanfDefaultString(productSelected.name, oldData.name);
             printf(" Product Description (%s): ", oldData.description);
             customScanfDefaultString(productSelected.description, oldData.description);
@@ -530,23 +539,24 @@ int prod_search_id(int id, const char * request) {
             printf("\n Save modified data?\n");
             do {
                 printf(" Type 'y' if yes, 'n' if no: ");
-                cscanc(&savedata);
+                cscanc(&savedata); // single-input yes or no
                 if (savedata == 'N' || savedata == 'n') {
                     goto SearchAgain; // cancelled / not saved
                 }
             } while (!(savedata == 'y' || savedata == 'Y' || savedata == 'n' || savedata == 'N'));
-            // copy modified data to all products selected index
+            // copy modified data to all products struct array with selected index for writing to file
             products[selectedIndex].id = productSelected.id;
             strcpy(products[selectedIndex].name, productSelected.name);
             strcpy(products[selectedIndex].description, productSelected.description);
             strcpy(products[selectedIndex].category, productSelected.category);
             strcpy(products[selectedIndex].unit, productSelected.unit);
             products[selectedIndex].unit_price = productSelected.unit_price;
-            // save to file
-            if (0 != saveProductToFile(products, count)) {
-                printf(" Something went wrong. Try again.\n\n");
-                goto SearchAgain;
+            // save to file with products struct array as the data source
+            if (0 != saveProductToFile(products, count)) { // and count as to how many records to write
+                printf(" Something went wrong. Try again.\n\n"); // if saveProductToFile() returns -1, it fails
+                goto SearchAgain; // redirect to SearchAgain label
             }
+            // successfully updated
             printf("\n ==> Successfully Updated Record to file!\n\n");
         } else if (0 == strcmp(request, "delete")) {
             // delete selected data
@@ -554,17 +564,17 @@ int prod_search_id(int id, const char * request) {
             printf(" => Do you really want to delete this record?\n");
             do {
                 printf(" Type 'y' if yes, 'n' if no: ");
-                cscanc(&dchoice);
+                cscanc(&dchoice); // single-input prompt for deleting or not
                 if (dchoice == 'n' || dchoice == 'N')
-                    goto SearchAgain;
+                    goto SearchAgain; // if not redirect to search again label
             } while (!(dchoice == 'y' || dchoice == 'Y' || dchoice == 'n' || dchoice == 'N'));
             printf(" ==> Deleting Record...\n");
-            int newCount = 0, j = 0;
-            Product productsNew[count];
-            memset(productsNew, 0, sizeof(productsNew));
+            int newCount = 0, j = 0; // newCount will be the new count of the records after deleting one record
+            Product productsNew[count]; // products struct array for writing to file after delete
+            memset(productsNew, 0, sizeof(productsNew)); // clear/zero-out productsNew struct array
             for (i = 0; i < count; i++) {
-                if (products[i].id == id)
-                    continue; // skip loop if selectedIndex is equal to i to be deleted
+                if (products[i].id == id) // if selected id is the products[i].id then skip
+                    continue; // skip loop if selected id is the products[i].id
                 // else copy the record/row to productsNew[i]
                 productsNew[j].id = products[i].id;
                 strcpy(productsNew[j].name, products[i].name);
@@ -575,21 +585,23 @@ int prod_search_id(int id, const char * request) {
                 j++; // j for productsNew index
                 newCount++; // new count
             }
-            if (0 != saveProductToFile(productsNew, newCount)) {
-                printf(" Something went wrong. Try again.\n\n");
-                goto SearchAgain;
+            if (0 != saveProductToFile(productsNew, newCount)) { // if returns 0, success
+                printf(" Something went wrong. Try again.\n\n"); // else file write error
+                goto SearchAgain; // search again if error occured
             }
+            // successfully delete file
             printf(" ==> Successfully Deleted Record from file!\n\n");
         }
+        // redirect to search again label
         goto SearchAgain;
     EndRec:
         return 0;
-    NoRecords:
+    NoRecords: // no records found label
         printf("\n ---------- %s Product Details ----------\n\n", capitalize(request));
     EndNoRecTable:
         printf(" => No Records found\n");
         printf("\n ---------------------------------------------\n\n");
-    SearchAgain:
+    SearchAgain: // search again label
         do {
             printf(" Do you want to search again?\n");
             printf(" Type 'y' if yes, 'n' if no: ");
@@ -610,11 +622,12 @@ int prod_search_id(int id, const char * request) {
 int prod_search_name(const char * prod_name, const char * request) {
     clrscr();
     int i, k, l = 0, count, selectedIndex = -1, recordsCount = 0, selectedID = -1;
-    char endchoice, name[20], desc[20], cat[20], p_unit[20], p_price[15];
+    char endchoice, name[20], desc[20], cat[20], p_unit[20], p_price[15]; // char buffer for center and right-align positions for display
     count = getRecordCount(PRODUCTRECORDS, sizeof(Product));
-    int selectedIndexes[count];
-    memset(selectedIndexes, 0, sizeof(selectedIndexes));
+    int selectedIndexes[count]; // for storing one or more selected indexes of the searched name
     Product products[count], productSelected[count], selectedProduct; // array of products with count
+    // clear or zero-out struct and arrays
+    memset(selectedIndexes, 0, sizeof(selectedIndexes));
     memset(products, 0, sizeof(products));
     memset(productSelected, 0, sizeof(productSelected));
     memset(&selectedProduct, 0, sizeof(selectedProduct));
@@ -625,7 +638,7 @@ int prod_search_name(const char * prod_name, const char * request) {
     printf(" %s%s%s%s%s%s\n\n", "Product ID", "    Product Name    ", "Product Description ", "  Product Category  ", "    Product Unit    ", " Product Unit Price ");
     for (i=0; i < count; i++) {
         for (k = 0; k < strlen(products[i].name); k++) {
-            if (0 == strnicmp(products[i].name + k, prod_name, strlen(prod_name))) {
+            if (0 == strnicmp(products[i].name + k, prod_name, strlen(prod_name))) { // products[i].name + k means begining of k index to compare prod_name with string length of prod_name
                 // copy to selected
                 productSelected[l].id = products[i].id;
                 strcpy(productSelected[l].name, products[i].name);
@@ -662,10 +675,10 @@ int prod_search_name(const char * prod_name, const char * request) {
                 // make selection
                 printf(" => Select one (1) row data to UPDATE:\n");
                 do {
-                    printf(" Enter ID: ");
+                    printf(" Enter ID: "); // we enter ID of one of the searched product names for updating
                     customScanfDefaultInt(&selectedID, -1);
                     for (i = 0; i < l; i++) {
-                        if (productSelected[i].id == selectedID) {
+                        if (productSelected[i].id == selectedID) { // copy the selected product struct array instance with i index to the selected product struct instance
                             selectedIndex = selectedIndexes[i];
                             selectedProduct.id = productSelected[i].id;
                             strcpy(selectedProduct.name, productSelected[i].name);
@@ -673,13 +686,14 @@ int prod_search_name(const char * prod_name, const char * request) {
                             strcpy(selectedProduct.category, productSelected[i].category);
                             strcpy(selectedProduct.unit, productSelected[i].unit);
                             selectedProduct.unit_price = productSelected[i].unit_price;
-                            goto IDSelectedUpdate;
+                            goto IDSelectedUpdate; // if found, break and redirect to IDSelectedUpdate label
                         }
                     }
                     selectedID = -1;
                     printf(" ID not in selection! Please Try Again.\n");
                 } while(selectedID < 0);
             } else {
+                // since there is only one found, we copy the first selected data to selected product struct instance
                 selectedIndex = selectedIndexes[0];
                 selectedProduct.id = productSelected[0].id;
                 strcpy(selectedProduct.name, productSelected[0].name);
@@ -689,6 +703,7 @@ int prod_search_name(const char * prod_name, const char * request) {
                 selectedProduct.unit_price = productSelected[0].unit_price;
             }
             IDSelectedUpdate: // ID has selected label
+                // same process with prod_search_id() for updating
                 char savedata;
                 Product oldData;
                 memset(&oldData, 0, sizeof(Product));
@@ -742,8 +757,8 @@ int prod_search_name(const char * prod_name, const char * request) {
                     printf(" Enter ID: ");
                     customScanfDefaultInt(&selectedID, -1);
                     for (i = 0; i < l; i++) {
-                        if (productSelected[i].id == selectedID)
-                            goto IDSelectedDelete;
+                        if (productSelected[i].id == selectedID) // if selectedID is found,
+                            goto IDSelectedDelete; // break and redirect to IDSelectedDelete label
                     }
                     selectedID = -1;
                     printf(" ID not in selection! Please Try Again.\n");
@@ -751,6 +766,7 @@ int prod_search_name(const char * prod_name, const char * request) {
             } else
                 selectedID = productSelected[0].id;
             IDSelectedDelete: // ID has selected label
+                // same process with prod_search_id() for deleting
                 char dchoice;
                 printf(" Selected ID: %08d\n", selectedID);
                 printf(" => Do you really want to delete ID # %08d record?\n", selectedID);
@@ -808,6 +824,7 @@ int prod_search_name(const char * prod_name, const char * request) {
  * @return int [0] if saved; else canceled / not saved;
  */
 int teller_add(void) {
+    // same process with prod_add except the data are different
     clrscr();
     int count, index;
     char save;
@@ -853,6 +870,7 @@ int teller_add(void) {
  * 
  */
 void teller_display(void) {
+    // same method with prod_display except the data are different
     clrscr();
     int i, count = 0;
     char first_name[26], middle_name[26], last_name[26];
@@ -884,6 +902,7 @@ void teller_display(void) {
  * 
  */
 void teller_sud_menu(const char * request) {
+    // same method with prod_sud_menu except the data are different
     clrscr();
     int choice;
     printf("\n ---------- %s Teller Details ----------\n\n", capitalize(request));
@@ -931,6 +950,7 @@ void teller_sud_menu(const char * request) {
  * @return int 0 - done with search | else still searching
  */
 int teller_search_id(int id, const char * request) {
+    // same method with prod_search_id except the data are different
     clrscr();
     int i, count, selectedIndex = -1;
     char endchoice, first_name[26], middle_name[26], last_name[26];
@@ -1060,6 +1080,7 @@ int teller_search_id(int id, const char * request) {
  * @return int 0 - done with search | else still searching
  */
 int teller_search_name(const char * teller_name, const char * request) {
+    // same method with prod_search_name except the data are different
     clrscr();
     int i, k, l = 0, count, selectedIndex = -1, recordsCount = 0, selectedID = -1;
     char endchoice, first_name[26], middle_name[26], last_name[26];
@@ -1291,11 +1312,13 @@ int teller_search_name(const char * teller_name, const char * request) {
  * 
  */
 void sale_new(void) {
-    clrscr();
-    fflush(stdin);
-    char choice, i, appendDisplay[5000], buffile[MAX_NAME], datenow[TIME_SIZE], timenow[TIME_SIZE], tempbuf[MAX_NAME];
+    clrscr(); // clears the screen
+    fflush(stdin); // for flushing scanf purposes
+    char choice, i, appendDisplay[5000], // appendDisplay will be the buffer for display
+        buffile[MAX_NAME], datenow[TIME_SIZE], timenow[TIME_SIZE], tempbuf[MAX_NAME]; // these are char buffer for date, time, filename, and temporary
     int searchID, latestID, count = 0, index = 0, tempQuantity = -1;
     float payable_amount, cash = -1.0, change;
+    // set the time now
     time_t t;
     struct tm * tmp;
     time(&t); // set time
@@ -1306,14 +1329,14 @@ void sale_new(void) {
     memset(timenow, 0, sizeof(timenow)); // set to empty
     strftime(datenow, sizeof(datenow), "%Y-%m-%d", tmp); // format will be 2022-12-25 for the filename
     sprintf(buffile, SALETRANSACTIONS, datenow); // we will use date for the filename
-    index = getRecordCount(SALERECORDS, sizeof(SaleTransaction));
-    count = index;
-    latestID = getLatestID(SALERECORDS, sizeof(SaleTransaction)); // set latest id of SaleTransaction data
-    SaleTransaction sale[MAX_ITEMS];
-    memset(sale, 0, sizeof(sale));
-    if (count > 0)
-        getSaleData(sale);
-    strcat(appendDisplay, "\n ---------- New Transaction ----------\n");
+    index = getRecordCount(SALERECORDS, sizeof(SaleTransaction)); // index is the total count of records before adding one or more records
+    count = index; // count will be the count of records after adding one or more records
+    latestID = getLatestID(SALERECORDS, sizeof(SaleTransaction)); // set latest maximum id of SaleTransaction data
+    SaleTransaction sale[MAX_ITEMS]; // sale transaction struct with MAX_ITEMS (2000) as the store capacity of array
+    memset(sale, 0, sizeof(sale)); // zero-out the sale transaction struct array instance
+    if (count > 0) // if no records,
+        getSaleData(sale); // then skip getting sale data from file to sale struct instance
+    strcat(appendDisplay, "\n ---------- New Transaction ----------\n"); // we append our display to appendDisplay also for writing to .txt file purposes
     do {
         memset(&sale[count], 0, sizeof(sale[count])); // set SaleTransaction data to empty or 0
         memset(&sale[count].product, 0, sizeof(sale[count].product)); // set the Product data empty or 0
@@ -1321,8 +1344,8 @@ void sale_new(void) {
         sale[count].id = latestID; // put the latest ID to the SaleTransaction struct data
         strcat(appendDisplay, tempbuf);
         do {
-            clrscr();
-            printf("%s", appendDisplay);
+            clrscr(); // clears the screen
+            printf("%s", appendDisplay); // then display appendDisplay string
             printf(" Product ID : "); // We will use product ID...
             customScanfDefaultInt(&searchID, -1); // ...rather than Product name for input to search the specific existing product
         } while (getProductByID(&sale[count].product, searchID) != 0); // searching for product details by ID and put it in the SaleTransaction data
@@ -1338,13 +1361,13 @@ void sale_new(void) {
         do {
             clrscr();
             printf("%s", appendDisplay);
-            customScanfDefaultInt(&tempQuantity, -1);
-            if (tempQuantity < 1) {
-                printf(" => Quantity should be greater (>) than 0.\n");
+            customScanfDefaultInt(&tempQuantity, -1); // defaults to -1 if empty input or invalid
+            if (tempQuantity < 1) { // if the inputted quantity is not a whole number
+                printf(" => Quantity should be greater (>) than 0.\n"); // prints an error
                 getch();
             }
-        } while (tempQuantity < 0);
-        sale[count].quantity = tempQuantity;
+        } while (tempQuantity < 0); // loop if inputted quantity is not a whole number
+        sale[count].quantity = tempQuantity; // copy the inputted quantity to sale transaction struct instance for storing and writing to file purposes
         sprintf(tempbuf, "%d\n%c", sale[count].quantity, 0);
         strcat(appendDisplay, tempbuf);
         clrscr(); // clear the command line screen
@@ -1358,9 +1381,9 @@ void sale_new(void) {
                 printf(" Invalid Choice!\n");
         } while (!(choice == 'n' || choice == 'N' || choice == 'y' || choice == 'Y'));
         // repeat if yes
-    } while (!(choice == 'n' || choice == 'N'));
+    } while (!(choice == 'n' || choice == 'N')); // if no, the continue here
     clrscr(); // clear the command line screen
-    payable_amount = compute_payable_amount(sale, count-index);
+    payable_amount = compute_payable_amount(sale, count-index); // we compute the payable amount with the recently added record from sale transaction struct instance
     // record payable amount
     strcat(appendDisplay, " _____________________________________\n");
     sprintf(tempbuf, " Total Payable Amount:\t%.2f\n%c", payable_amount, 0);
@@ -1384,19 +1407,19 @@ void sale_new(void) {
     sprintf(tempbuf, "\n Change: %.2f%c", change, 0);
     strcat(appendDisplay, tempbuf);
     printf("\n Change: %.2f\n", change);
-    time(&t); // set time
+    time(&t); // set time now
     tmp = localtime(&t); // set localtime
     strftime(timenow, sizeof(timenow), "%H:%M:%S", tmp); // format will be 24:59:59 for the time of transaction
-    sprintf(tempbuf, "\n\n Date: %s\n%c", datenow, 0);
-    strcat(appendDisplay, tempbuf);
-    sprintf(tempbuf, " Time: %s\n%c", timenow, 0);
-    strcat(appendDisplay, tempbuf);
-    // write to bin file
+    sprintf(tempbuf, "\n\n Date: %s\n%c", datenow, 0); // we write the date to buffer
+    strcat(appendDisplay, tempbuf); // append it to display buffer
+    sprintf(tempbuf, " Time: %s\n%c", timenow, 0); // also the time
+    strcat(appendDisplay, tempbuf); // append it
+    // write to bin file the saleTransaction struct array instance records
     if (0 != saveSaleTransactionToFile(sale, count)) {
         fprintf(stderr, "Failed to write sales transaction records file. Sale Transaction was not saved");
         return;
     }
-    // write to txt file
+    // write to txt file the appendDisplay string (this is like a receipt to be printed)
     FILE * fp;
     if ((fp = fopen(buffile, "a")) == NULL) {
         fprintf(stderr, "Failed to write transaction file. Sale Transaction saved but did not write to display transaction text file.");
@@ -1411,7 +1434,8 @@ void sale_new(void) {
  * 
  */
 void sale_display(void) {
-    clrscr();
+    // same process with prod_display() and teller_display() but have different data
+    clrscr(); // clear the screen terminal
     int i, j, count, size;
     char name[20], p_unit[20], p_price[16];
     count = getRecordCount(SALERECORDS, sizeof(SaleTransaction));
@@ -1445,10 +1469,11 @@ void sale_display(void) {
  * @return float Total Payable Amount
  */
 float compute_payable_amount(SaleTransaction * sale, int count) {
-    int i, starti;
+    int i, start, totalCount;
     float sum;
-    starti = getRecordCount(SALERECORDS, sizeof(SaleTransaction));
-    for (i = starti; i < count+starti; i++)
+    start = getRecordCount(SALERECORDS, sizeof(SaleTransaction)); // start is the first index of the newly added sale transaction record with is not in the records file
+    totalCount = count+start; // total count of records with the old and the new records
+    for (i = start; i < totalCount; i++) // we will start from the first index of the newly records sale transaction
         sum += sale[i].product.unit_price * sale[i].quantity;
     return sum;
 }
@@ -1475,10 +1500,10 @@ int getRecordCount(const char * filename, int recordsize) {
         fprintf(stderr, "Failed to open %s Records.", filename);
         return 0;
     }
-    fseek(fp, 0, SEEK_END); // set cursor at the end
+    fseek(fp, 0, SEEK_END); // set cursor at the end of file
     size = ftell(fp); // get the file size from the end cursor
-    fseek(fp, 0, SEEK_SET);
-    fclose(fp);
+    fseek(fp, 0, SEEK_SET); // set the cursor at the start of file
+    fclose(fp); // close the file
     if (!size)
         return 0; // if file size is 0 return 0
     count = size / recordsize; // get the records count by dividing the file size and the size of Teller struct
@@ -1493,39 +1518,39 @@ int getRecordCount(const char * filename, int recordsize) {
  */
 int getLatestID(const char * filename, int recordsize) {
     int i, count, maxid;
-    count = getRecordCount(filename, recordsize);
+    count = getRecordCount(filename, recordsize); // record count
     if (count < 1)
         return 0; // return 0 if no records
     int ids[count];
-    if (0 == strcmp(filename, PRODUCTRECORDS)) {
-        Product temp[count];
+    if (0 == strcmp(filename, PRODUCTRECORDS)) { // if filename is PRODUCTRECORDS
+        Product temp[count]; // Product struct instance is used
         memset(temp, 0, sizeof(temp));
-        getProductData(temp);
+        getProductData(temp); // get all Product records to temp variable
         for (i = 0; i < count; i++) {
-            ids[i] = temp[i].id;
+            ids[i] = temp[i].id; // store the ids of products to ids[] int array
         }
-    } else if (0 == strcmp(filename, TELLERRECORDS)) {
-        Teller temp[count];
+    } else if (0 == strcmp(filename, TELLERRECORDS)) { // if filename is TELLERRECORDS
+        Teller temp[count]; // Teller struct instance is used
         memset(temp, 0, sizeof(temp));
-        getTellerData(temp);
+        getTellerData(temp); // get all Teller records to temp variable
         for (i = 0; i < count; i++) {
-            ids[i] = temp[i].id;
+            ids[i] = temp[i].id; // store the ids of products to ids[] int array
         }
-    } else if (0 == strcmp(filename, SALERECORDS)) {
-        SaleTransaction temp[count];
+    } else if (0 == strcmp(filename, SALERECORDS)) { // if filename is SALERECORDS
+        SaleTransaction temp[count]; // SaleTransaction struct instance is used
         memset(temp, 0, sizeof(temp));
-        getSaleData(temp);
+        getSaleData(temp); // get all SaleTransaction records to temp variable
         for (i = 0; i < count; i++) {
-            ids[i] = temp[i].id;
+            ids[i] = temp[i].id; // store the ids of products to ids[] int array
         }
     }
-    maxid = maxOfInt(ids, count);
+    maxid = maxOfInt(ids, count); // get the maximum integer value from ids[] array
     return maxid;
 }
 /**
  * @brief Save Product struct to file
  * 
- * @param product Product struct data
+ * @param product Product struct array data
  * @param count count of all new data
  * @return int 0 - success | -1 error
  */
@@ -1536,7 +1561,7 @@ int saveProductToFile(Product * product, int count) {
         fprintf(stderr, "CANNOT READ PRODUCT RECORDS FILE.\n");
         return -1;
     }
-    for (i = 0; i < count; i++)
+    for (i = 0; i < count; i++) // iterate one record at a time and write to file
         fwrite(&product[i], sizeof(Product), 1, fp);
     fclose(fp);
     return 0;
@@ -1544,7 +1569,7 @@ int saveProductToFile(Product * product, int count) {
 /**
  * @brief Save Teller struct to file
  * 
- * @param teller Teller struct data
+ * @param teller Teller struct array data
  * @param count count of all new data
  * @return int 0 - success | -1 error
  */
@@ -1555,7 +1580,7 @@ int saveTellerToFile(Teller * teller, int count) {
         fprintf(stderr, "CANNOT READ TELLER RECORDS FILE.\n");
         return -1;
     }
-    for (i = 0; i < count; i++)
+    for (i = 0; i < count; i++) // iterate one record at a time and write to file
         fwrite(&teller[i], sizeof(Teller), 1, fp);
     fclose(fp);
     return 0;
@@ -1563,7 +1588,7 @@ int saveTellerToFile(Teller * teller, int count) {
 /**
  * @brief Save SaleTransaction struct to file
  * 
- * @param teller SaleTransaction struct data
+ * @param teller SaleTransaction struct array data
  * @param count count of all new data
  * @return int 0 - success | -1 error
  */
@@ -1574,7 +1599,7 @@ int saveSaleTransactionToFile(SaleTransaction * sale, int count) {
         fprintf(stderr, "CANNOT READ SALE RECORDS FILE.\n");
         return -1;
     }
-    for (i = 0; i < count; i++)
+    for (i = 0; i < count; i++) // iterate one record at a time and write to file
         fwrite(&sale[i], sizeof(SaleTransaction), 1, fp);
     fclose(fp);
     return 0;
@@ -1582,7 +1607,7 @@ int saveSaleTransactionToFile(SaleTransaction * sale, int count) {
 /**
  * @brief Get the Product Data from records file
  * 
- * @param product Product buffer
+ * @param product Product struct array buffer
  */
 void getProductData(Product * product) {
     FILE * fp;
@@ -1594,14 +1619,14 @@ void getProductData(Product * product) {
     count = getRecordCount(PRODUCTRECORDS, sizeof(Product));
     if (count < 1)
         return;
-    for (i = 0; i < count; i++)
-        fread(&product[i], sizeof(Product), 1, fp);
+    for (i = 0; i < count; i++) // iterate one record at a time and read from file
+        fread(&product[i], sizeof(Product), 1, fp); // store the data element struct to product[i]
     fclose(fp);
 }
 /**
  * @brief Get the Teller Data from file
  * 
- * @param teller Teller buffer
+ * @param teller Teller struct array buffer
  */
 void getTellerData(Teller * teller) {
     FILE * fp;
@@ -1613,14 +1638,14 @@ void getTellerData(Teller * teller) {
     count = getRecordCount(TELLERRECORDS, sizeof(Teller));
     if (count < 1)
         return;
-    for (i = 0; i < count; i++)
-        fread(&teller[i], sizeof(Teller), 1, fp);
+    for (i = 0; i < count; i++) // iterate one record at a time and read from file
+        fread(&teller[i], sizeof(Teller), 1, fp); // store the data element struct to teller[i]
     fclose(fp);
 }
 /**
  * @brief Get the Sale Data from file
  * 
- * @param sale SaleTransaction buffer
+ * @param sale SaleTransaction struct array buffer
  */
 void getSaleData(SaleTransaction * sale) {
     FILE * fp;
@@ -1632,8 +1657,8 @@ void getSaleData(SaleTransaction * sale) {
     count = getRecordCount(SALERECORDS, sizeof(SaleTransaction));
     if (count < 1)
         return;
-    for (i = 0; i < count; i++)
-        fread(&sale[i], sizeof(SaleTransaction), 1, fp);
+    for (i = 0; i < count; i++) // iterate one record at a time and read from file
+        fread(&sale[i], sizeof(SaleTransaction), 1, fp); // store the data element struct to sale[i]
     fclose(fp);
 }
 /**
@@ -1647,9 +1672,10 @@ int getProductByID(Product * productbuffer, int searchID) {
     int count, i;
     count = getRecordCount(PRODUCTRECORDS, sizeof(Product));
     Product products[count];
-    getProductData(products);
+    getProductData(products); // get all product data to products struct array
     for (i = 0; i < count; i++) {
         if (products[i].id == searchID) {
+            // if id found, copy to product struct buffer
             (*productbuffer).id = products[i].id;
             strcpy((*productbuffer).name, products[i].name);
             strcpy((*productbuffer).description, products[i].description);
@@ -1673,10 +1699,11 @@ int getProductByID(Product * productbuffer, int searchID) {
 int dscanc(int * d) {
     char cbuf, buf[2];
     memset(buf, 0, 2);
-    cbuf = getch();
-    *buf = cbuf;
-    *d = atoi(buf);
-    printf("%d\n", *d);
+    cbuf = getch(); // getch() get a single character only then put to cbuf char buffer
+    *buf = cbuf; // copy the character cbuf to the first element of buf char array string
+    *d = atoi(buf); // atoi() converts a stringed type number to integer number and put to buffer
+    printf("%d\n", *d); // then display the inputted character to screen
+    // this way we dont have to press enter on inputting one character
     return *d;
 }
 /**
@@ -1686,8 +1713,9 @@ int dscanc(int * d) {
  * @return int character inputted
  */
 int cscanc(char * c) {
-    *c = getch();
-    printf("%c\n", *c);
+    *c = getch(); // getch() get a single character only then put to c char buffer
+    printf("%c\n", *c); // then display the inputted character to screen
+    // this way we dont have to press enter on inputting one character
     return *c;
 }
 /**
@@ -1698,19 +1726,21 @@ int cscanc(char * c) {
  */
 char * capitalize(const char * word) {
     int upper = 0;
-    char buf[250], *ret;
-    memset(buf, 0, 250*sizeof(buf[0]));
-    strcpy(buf, word);
-    char * temp = (char *)buf;
-    for (; *temp; ++temp) {
+    char buf[MAX_NAME], *ret;
+    memset(buf, 0, sizeof(buf)); // empty the buf char buffer
+    strcpy(buf, word); // copy the word argument value to buf
+    char * temp = (char *)buf; // pass buf to char * temp
+    for (; *temp; ++temp) { // modify using temp variable
         if (upper == 0) {
             *temp = toupper((unsigned char)*temp); // Capitalize first letter
             upper++;
         } else
             *temp = tolower((unsigned char)*temp); // lowercase other letters
     }
-    ret = (char *)buf;
-    return ret;
+    // after modifying temp, automatically buf also modifies because
+    // temp points to buf
+    ret = (char *)buf; // poiunt ret to buf
+    return ret; // return ret
 }
 /**
  * @brief Get the maximum value of an int array
@@ -1723,10 +1753,11 @@ int maxOfInt(int * arr, int count) {
     if (count < 1)
         return 0;
     for (i = 0; i < count; i++) {
-        if (arr[0] < arr[i]) {
-            arr[0] = arr[i];
+        if (arr[0] < arr[i]) { // if current index element value is greater then the first element
+            arr[0] = arr[i]; // copy the current index element value to the first array
         }
     }
+    // the first element will be the maximum integer value
     return arr[0];
 }
 /**
@@ -1792,9 +1823,9 @@ void customScanfDefaultString(char * buffer, const char * defaultVal) {
     strcpy(defaultStr, defaultVal);
     scanf("%[^\n]s", buf);
     fflush(stdin);
-    if (strlen(buf) < 1)
+    if (strlen(buf) < 1) // default value is used
         strcpy(buffer,defaultStr);
-    else {
+    else { // inputted string is used
         strcpy(buffer, buf);
     }
 }
@@ -1812,28 +1843,28 @@ void customScanfDefaultFloat(float * buffer, float defaultVal) {
     scanf("%[^\n]s", buf);
     fflush(stdin);
     if (strlen(buf) < 1)
-        goto DefaultValue;
+        goto DefaultValue; // if empty input, redirect to default value
     for (i=0; i < strlen(buf); i++) {
-        if (!(isdigit(buf[i]) || buf[i] == '.')) {
+        if (!(isdigit(buf[i]) || buf[i] == '.')) { // if input is not a number or a (.)
             printf(" Invalid Input. Only Numeric characters are allowed!\n");
-            goto DefaultValue;
+            goto DefaultValue; // redirect to DefaultValue
         }
         if (buf[i] == '.') dots++;
-        if (dots > 1) {
+        if (dots > 1) { // if input has more than one (.)
             printf(" Invalid Input. Cannot input more than one dot character (.) in a numeric input\n");
-            goto DefaultValue;
+            goto DefaultValue; // redirect to DefaultValue
         }
     }
     // if all digits or . (dot)
     if (strlen(buf) == 1 && buf[0] == '.')
-        *buffer = 0.0;
-    else {
-        result = (float)atof(buf);
-        *buffer = result;
+        *buffer = 0.0; // zero if only a '.' character is inputted
+    else { // if digit is inputted and with or without dot (.)
+        result = (float)atof(buf); // atof() converts a stringed-type number to floating number
+        *buffer = result; // copy result to buffer
     }
     return;
-    DefaultValue:
-        *buffer = defaultVal;
+    DefaultValue: // default value label
+        *buffer = defaultVal; // copy defaultValue to buffer
 }
 /**
  * @brief Custom Scanf with default integer number if input is empty
@@ -1848,26 +1879,28 @@ void customScanfDefaultInt(int * buffer, const int defaultVal) {
     scanf("%[^\n]s", buf);
     fflush(stdin);
     if (strlen(buf) < 1)
-        goto DefaultValue;
-    for (i=0; i < strlen(buf); i++) {
-        if (!(isdigit(buf[i]) || buf[i] == '.')) {
+        goto DefaultValue; // if empty input, redirect to default value
+    for (i=0; i < strlen(buf); i++) { 
+        if (!(isdigit(buf[i]) || buf[i] == '.')) { // if input is not a number or a (.)
             printf(" Invalid Input. Only Numeric characters are allowed!\n");
             goto DefaultValue;
         }
         if (buf[i] == '.') dots++;
-        if (dots > 1) {
+        if (dots > 1) { // if input has more than one (.)
             printf(" Invalid Input. Cannot input more than one dot character (.) in a numeric input\n");
             goto DefaultValue;
         }
     }
     // if all digits or . (dot)
     if (strlen(buf) == 1 && buf[0] == '.')
-        *buffer = 0;
-    else {
-        result = (int)atoi(buf);
-        *buffer = result;
+        *buffer = 0; // zero if only a '.' character is inputted
+    else { // if digit is inputted and with or without dot (.)
+        result = (int)atoi(buf); // atoi() converts a stringed-type number to integer number
+        *buffer = result; // copy result to buffer
     }
     return;
-    DefaultValue:
-        *buffer = defaultVal;
+    DefaultValue: // default value label
+        *buffer = defaultVal; // copy defaultValue to buffer
 }
+
+// Finished

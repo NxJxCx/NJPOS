@@ -94,7 +94,7 @@ typedef struct {
     float unit_price; // unit price of product
 } Product; // Product Details
 typedef struct {
-    int id;
+    int id; // Teller id
     char first_name[MAX_NAME]; // first name of teller
     char middle_name[MAX_NAME]; // middle name of teller
     char last_name[MAX_NAME]; // last name of teller

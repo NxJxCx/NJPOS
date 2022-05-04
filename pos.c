@@ -121,7 +121,7 @@ void teller_display(void); // Display all Teller Details
 void teller_sud_menu(const char * request); // Teller Search/Update/Delete Menu
 int teller_search_id(int id, const char * request); // Teller Search/Update/Delete Request by ID
 int teller_search_name(const char * teller_name, const char * request); // Teller Search/Update/Delete Request by Product Name
-void sale_new(void); // add new transaction
+void sale_add(void); // add new transaction
 void sale_display(void); // Display Transactions
 float compute_payable_amount(SaleTransaction * sale, int count); // Compute Total Payable amount
 float compute_change(float payable_amount, float cash); // Compute Total Payable amount
@@ -319,7 +319,7 @@ void sales_menu(void) {
     } while (!(choice > 0 && choice < 4));
     switch (choice) {
         case 1: // add new sale transaction
-            sale_new();
+            sale_add();
             break;
         case 2: //  display all sale transaction records
             sale_display();
@@ -1311,12 +1311,12 @@ int teller_search_name(const char * teller_name, const char * request) {
  * @brief Add new Sale Transaction
  * 
  */
-void sale_new(void) {
+void sale_add(void) {
     clrscr(); // clears the screen
     fflush(stdin); // for flushing scanf purposes
-    char choice, i, appendDisplay[5000], // appendDisplay will be the buffer for display
+    char choice, appendDisplay[5000], // appendDisplay will be the buffer for display
         buffile[MAX_NAME], datenow[TIME_SIZE], timenow[TIME_SIZE], tempbuf[MAX_NAME]; // these are char buffer for date, time, filename, and temporary
-    int searchID, latestID, count = 0, index = 0, tempQuantity = -1;
+    int i, j = 0, searchID, latestID, count = 0, index = 0, tempQuantity = -1, newCount = 0; // newCount is the current new records count
     float payable_amount, cash = -1.0, change;
     // set the time now
     time_t t;
@@ -1330,32 +1330,27 @@ void sale_new(void) {
     strftime(datenow, sizeof(datenow), "%Y-%m-%d", tmp); // format will be 2022-12-25 for the filename
     sprintf(buffile, SALETRANSACTIONS, datenow); // we will use date for the filename
     index = getRecordCount(SALERECORDS, sizeof(SaleTransaction)); // index is the total count of records before adding one or more records
-    count = index; // count will be the count of records after adding one or more records
     latestID = getLatestID(SALERECORDS, sizeof(SaleTransaction)); // set latest maximum id of SaleTransaction data
-    SaleTransaction sale[MAX_ITEMS]; // sale transaction struct with MAX_ITEMS (2000) as the store capacity of array
-    memset(sale, 0, sizeof(sale)); // zero-out the sale transaction struct array instance
-    if (count > 0) // if no records,
-        getSaleData(sale); // then skip getting sale data from file to sale struct instance
+    SaleTransaction newSale[MAX_NAME]; // for new records
+    memset(newSale, 0, sizeof(newSale));  // zero-out the sale transaction struct array instance for new records
     strcat(appendDisplay, "\n ---------- New Transaction ----------\n"); // we append our display to appendDisplay also for writing to .txt file purposes
     do {
-        memset(&sale[count], 0, sizeof(sale[count])); // set SaleTransaction data to empty or 0
-        memset(&sale[count].product, 0, sizeof(sale[count].product)); // set the Product data empty or 0
         sprintf(tempbuf, "\n Sale ID : %d\n%c", ++latestID, 0); // increment the latestID of recorded sale transaction
-        sale[count].id = latestID; // put the latest ID to the SaleTransaction struct data
+        newSale[newCount].id = latestID; // put the latest ID to the SaleTransaction struct data
         strcat(appendDisplay, tempbuf);
         do {
             clrscr(); // clears the screen
             printf("%s", appendDisplay); // then display appendDisplay string
             printf(" Product ID : "); // We will use product ID...
             customScanfDefaultInt(&searchID, -1); // ...rather than Product name for input to search the specific existing product
-        } while (getProductByID(&sale[count].product, searchID) != 0); // searching for product details by ID and put it in the SaleTransaction data
+        } while (getProductByID(&newSale[newCount].product, searchID) != 0); // searching for product details by ID and put it in the SaleTransaction data
         
         // append display to appendDisplay variable string of the selected product details     
-        sprintf(tempbuf, " Product Name : %s\n%c", sale[count].product.name, 0);
+        sprintf(tempbuf, " Product Name : %s\n%c", newSale[newCount].product.name, 0);
         strcat(appendDisplay, tempbuf);
-        sprintf(tempbuf, " Product Unit : %s\n%c", sale[count].product.unit, 0);
+        sprintf(tempbuf, " Product Unit : %s\n%c", newSale[newCount].product.unit, 0);
         strcat(appendDisplay, tempbuf);
-        sprintf(tempbuf, " Product Price : %.2f\n%c", sale[count].product.unit_price, 0);
+        sprintf(tempbuf, " Product Price : %.2f\n%c", newSale[newCount].product.unit_price, 0);
         strcat(appendDisplay, tempbuf);
         strcat(appendDisplay, " Quantity : ");
         do {
@@ -1367,12 +1362,12 @@ void sale_new(void) {
                 getch();
             }
         } while (tempQuantity < 0); // loop if inputted quantity is not a whole number
-        sale[count].quantity = tempQuantity; // copy the inputted quantity to sale transaction struct instance for storing and writing to file purposes
-        sprintf(tempbuf, "%d\n%c", sale[count].quantity, 0);
+        newSale[newCount].quantity = tempQuantity; // copy the inputted quantity to sale transaction struct instance for storing and writing to file purposes
+        sprintf(tempbuf, "%d\n%c", newSale[newCount].quantity, 0);
         strcat(appendDisplay, tempbuf);
         clrscr(); // clear the command line screen
         printf("%s", appendDisplay); // display previous and current product details of selected products
-        count++; // increment the count of latest new records
+        newCount++; // increment the 
         do {
             printf("\n Do you want to add another item?\n");
             printf(" Type 'y' if yes, 'n' if no: ");
@@ -1383,7 +1378,7 @@ void sale_new(void) {
         // repeat if yes
     } while (!(choice == 'n' || choice == 'N')); // if no, the continue here
     clrscr(); // clear the command line screen
-    payable_amount = compute_payable_amount(sale, count-index); // we compute the payable amount with the recently added record from sale transaction struct instance
+    payable_amount = compute_payable_amount(newSale, newCount); // we compute the payable amount with the recently added record from sale transaction struct instance
     // record payable amount
     strcat(appendDisplay, " _____________________________________\n");
     sprintf(tempbuf, " Total Payable Amount:\t%.2f\n%c", payable_amount, 0);
@@ -1414,6 +1409,27 @@ void sale_new(void) {
     strcat(appendDisplay, tempbuf); // append it to display buffer
     sprintf(tempbuf, " Time: %s\n%c", timenow, 0); // also the time
     strcat(appendDisplay, tempbuf); // append it
+    // append new records to old records
+    count = index + newCount; // update total count of records
+    SaleTransaction sale[count]; // sale transaction struct with MAX_ITEMS (2000) as the store capacity of array
+    memset(sale, 0, sizeof(sale)); // zero-out the sale transaction struct array instance
+    if (index > 0) // if no records,
+        getSaleData(sale); // then skip getting sale data from file to sale struct instance
+    j = 0; // j for newSale index
+    for (i = index; i < count; i++) {
+        // sale id
+        sale[i].id = newSale[j].id;
+        // product
+        sale[i].product.id = newSale[j].product.id;
+        strcpy(sale[i].product.name,newSale[j].product.name);
+        strcpy(sale[i].product.description, newSale[j].product.description);
+        strcpy(sale[i].product.category, newSale[j].product.category);
+        strcpy(sale[i].product.unit, newSale[j].product.unit);
+        sale[i].product.unit_price = newSale[j].product.unit_price;
+        // quantity
+        sale[i].quantity = newSale[j].quantity;
+        j++; // increment j for newSale index
+    }
     // write to bin file the saleTransaction struct array instance records
     if (0 != saveSaleTransactionToFile(sale, count)) {
         fprintf(stderr, "Failed to write sales transaction records file. Sale Transaction was not saved");
@@ -1468,13 +1484,18 @@ void sale_display(void) {
  * @param sale SaleTransaction structure data
  * @return float Total Payable Amount
  */
-float compute_payable_amount(SaleTransaction * sale, int count) {
-    int i, start, totalCount;
-    float sum;
-    start = getRecordCount(SALERECORDS, sizeof(SaleTransaction)); // start is the first index of the newly added sale transaction record with is not in the records file
-    totalCount = count+start; // total count of records with the old and the new records
-    for (i = start; i < totalCount; i++) // we will start from the first index of the newly records sale transaction
-        sum += sale[i].product.unit_price * sale[i].quantity;
+float compute_payable_amount(SaleTransaction * saleArray, int count) {
+    int i;
+    float sum, unitPrice, quantity, product;
+    for (i = 0; i < count; i++) { // we will start from the first index of the newly records sale transaction
+        // copy the value
+        unitPrice = saleArray[i].product.unit_price;
+        quantity = saleArray[i].quantity;
+        // multiply
+        product = unitPrice * quantity;
+        // add the product
+        sum += product;
+    }
     return sum;
 }
 /**

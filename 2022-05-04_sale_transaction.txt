@@ -20,3 +20,119 @@
 
  Date: 2022-05-04
  Time: 12:57:00
+
+ ---------- New Transaction ----------
+
+ Sale ID : 3
+ Product Name : Safeguard 50 g.
+ Product Unit : piece
+ Product Price : 75.25
+ Quantity : 100
+
+ Sale ID : 4
+ Product Name : Palmolive
+ Product Unit : piece
+ Product Price : 15.00
+ Quantity : 100
+ _____________________________________
+ Total Payable Amount:	9025.00
+ Cash: 10000.00
+
+ Change: 975.00
+
+ Date: 2022-05-04
+ Time: 13:28:50
+
+ ---------- New Transaction ----------
+
+ Sale ID : 5
+ Product Name : Safeguard 50 g.
+ Product Unit : piece
+ Product Price : 75.25
+ Quantity : 10
+
+ Sale ID : 6
+ Product Name : Palmolive
+ Product Unit : piece
+ Product Price : 15.00
+ Quantity : 10
+ _____________________________________
+ Total Payable Amount:	902.50
+ Cash: 1000.00
+
+ Change: 97.50
+
+ Date: 2022-05-04
+ Time: 13:29:09
+
+ ---------- New Transaction ----------
+
+ Sale ID : 7
+ Product Name : Safeguard 50 g.
+ Product Unit : piece
+ Product Price : 75.25
+ Quantity : 23
+
+ Sale ID : 8
+ Product Name : Palmolive
+ Product Unit : piece
+ Product Price : 15.00
+ Quantity : 10
+ _____________________________________
+ Total Payable Amount:	1880.75
+ Cash: 2022.00
+
+ Change: 141.25
+
+ Date: 2022-05-04
+ Time: 13:55:26
+
+ ---------- New Transaction ----------
+
+ Sale ID : 9
+ Product Name : Palmolive
+ Product Unit : piece
+ Product Price : 15.00
+ Quantity : 100
+
+ Sale ID : 10
+ Product Name : Safeguard 50 g.
+ Product Unit : piece
+ Product Price : 75.25
+ Quantity : 1
+
+ Sale ID : 11
+ Product Name : Safeguard 50 g.
+ Product Unit : piece
+ Product Price : 75.25
+ Quantity : 3
+ _____________________________________
+ Total Payable Amount:	1801.00
+ Cash: 2000.50
+
+ Change: 199.50
+
+ Date: 2022-05-04
+ Time: 13:56:05
+
+ ---------- New Transaction ----------
+
+ Sale ID : 12
+ Product Name : Palmolive
+ Product Unit : piece
+ Product Price : 15.00
+ Quantity : 100
+
+ Sale ID : 13
+ Product Name : Safeguard 50 g.
+ Product Unit : piece
+ Product Price : 75.25
+ Quantity : 100
+ _____________________________________
+ Total Payable Amount:	9025.00
+ Cash: 10000.25
+
+ Change: 975.25
+
+ Date: 2022-05-04
+ Time: 14:00:02

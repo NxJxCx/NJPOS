@@ -1,6 +1,6 @@
 /**
  * @file pos.c
- * @author Neil Jason Cañete (caneteneiljason@smccnasipit.edu.ph)
+ * @author Neil Jason Cañete (neiljason_canete@smccnasipit.edu.ph)
  * @date 2022-05-02
  * 
  * @copyright Copyright (c) Neil Jason Cañete @ SMCC 2022
@@ -1515,7 +1515,7 @@ float compute_change(float payable_amount, float cash) {
  */
 int getRecordCount(const char * filename, int recordsize) {
     FILE * fp;
-    int size, count = 0;
+    int size=0, count = 0;
     if ((fp = fopen(filename, "rb")) == NULL) {
         fprintf(stderr, "Failed to open %s Records.", filename);
         return 0;
